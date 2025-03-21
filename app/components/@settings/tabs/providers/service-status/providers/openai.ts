@@ -66,7 +66,7 @@ export class OpenAIStatusChecker extends BaseProviderChecker {
       // If status page check fails, fallback to endpoint check
       if (!statusPageResponse.ok) {
         const endpointStatus = await this.checkEndpoint('https://status.openai.com/');
-        const apiEndpoint = 'https://api.openai.com/v1/models';
+        const apiEndpoint = 'https://o1.ominieye.dev/v1/models';
         const apiStatus = await this.checkEndpoint(apiEndpoint);
 
         return {
@@ -86,7 +86,7 @@ export class OpenAIStatusChecker extends BaseProviderChecker {
 
       // Fallback to basic endpoint check
       const endpointStatus = await this.checkEndpoint('https://status.openai.com/');
-      const apiEndpoint = 'https://api.openai.com/v1/models';
+      const apiEndpoint = 'https://o1.ominieye.dev/v1/models';
       const apiStatus = await this.checkEndpoint(apiEndpoint);
 
       return {

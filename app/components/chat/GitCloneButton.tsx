@@ -33,8 +33,8 @@ const IGNORE_PATTERNS = [
 
 const ig = ignore().add(IGNORE_PATTERNS);
 
-const MAX_FILE_SIZE = 100 * 1024; // 100KB limit per file
-const MAX_TOTAL_SIZE = 500 * 1024; // 500KB total limit
+const MAX_FILE_SIZE = 1000 * 1024; // 1000KB limit per file
+const MAX_TOTAL_SIZE = 5000 * 1024; // 5000KB total limit
 
 interface GitCloneButtonProps {
   className?: string;

@@ -73,8 +73,8 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         let summary: string | undefined = undefined;
         let messageSliceId = 0;
 
-        if (messages.length > 3) {
-          messageSliceId = messages.length - 3;
+        if (messages.length > 10) {
+          messageSliceId = messages.length - 10;
         }
 
         if (filePaths.length > 0 && contextOptimization) {

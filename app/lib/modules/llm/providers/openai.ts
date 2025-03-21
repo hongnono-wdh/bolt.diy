@@ -18,6 +18,15 @@ export default class OpenAIProvider extends BaseProvider {
     { name: 'gpt-4-turbo', label: 'GPT-4 Turbo', provider: 'OpenAI', maxTokenAllowed: 8000 },
     { name: 'gpt-4', label: 'GPT-4', provider: 'OpenAI', maxTokenAllowed: 8000 },
     { name: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo', provider: 'OpenAI', maxTokenAllowed: 8000 },
+
+
+    //oneapi 模型
+    { name: 'claude-3-7-sonnet-20250219', label: 'claude-3-7-sonnet-20250219', provider: 'OpenAI', maxTokenAllowed: 64000 },
+    { name: 'claude-3-7-sonnet-latest', label: 'claude-3-7-sonnet-latest', provider: 'OpenAI', maxTokenAllowed: 64000 },
+    { name: 'claude-3-5-haiku-20241022', label: 'claude-3-5-haiku-20241022', provider: 'OpenAI', maxTokenAllowed: 8000 },
+    { name: 'claude-3-5-haiku-latest', label: 'claude-3-5-haiku-latest', provider: 'OpenAI', maxTokenAllowed: 8000 },
+    { name: 'claude-3-5-sonnet-20241022', label: 'claude-3-5-sonnet-20241022', provider: 'OpenAI', maxTokenAllowed: 8000 },
+    { name: 'claude-3-5-sonnet-latest', label: 'claude-3-5-sonnet-latest', provider: 'OpenAI', maxTokenAllowed: 8000 },
   ];
 
   async getDynamicModels(
@@ -29,7 +38,7 @@ export default class OpenAIProvider extends BaseProvider {
       apiKeys,
       providerSettings: settings,
       serverEnv: serverEnv as any,
-      defaultBaseUrlKey: '',
+      defaultBaseUrlKey: 'https://o1.ominieye.dev',
       defaultApiTokenKey: 'OPENAI_API_KEY',
     });
 
@@ -37,7 +46,7 @@ export default class OpenAIProvider extends BaseProvider {
       throw `Missing Api Key configuration for ${this.name} provider`;
     }
 
-    const response = await fetch(`https://api.openai.com/v1/models`, {
+    const response = await fetch(`https://o1.ominieye.dev/v1/models`, {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
@@ -52,8 +61,18 @@ export default class OpenAIProvider extends BaseProvider {
         (model.id.startsWith('gpt-') || model.id.startsWith('o') || model.id.startsWith('chatgpt-')) &&
         !staticModelIds.includes(model.id),
     );
+    console.log('模型列表', data);
 
-    return data.map((m: any) => ({
+
+    // 将上下文配置补充进模型
+    let updatedData = data.map((m: any) => ({
+      ...m,
+      context_window: this.staticModels.find((s) => s.name === m.id)?.maxTokenAllowed || m.context_window || 32000,
+    }));
+
+
+
+    return updatedData.map((m: any) => ({
       name: m.id,
       label: `${m.id}`,
       provider: this.name,
@@ -82,6 +101,7 @@ export default class OpenAIProvider extends BaseProvider {
     }
 
     const openai = createOpenAI({
+      baseURL: 'https://o1.ominieye.dev/v1',
       apiKey,
     });
 

