@@ -27,6 +27,7 @@ export default class OpenAIProvider extends BaseProvider {
     { name: 'claude-3-5-haiku-latest', label: 'claude-3-5-haiku-latest', provider: 'OpenAI', maxTokenAllowed: 8000 },
     { name: 'claude-3-5-sonnet-20241022', label: 'claude-3-5-sonnet-20241022', provider: 'OpenAI', maxTokenAllowed: 8000 },
     { name: 'claude-3-5-sonnet-latest', label: 'claude-3-5-sonnet-latest', provider: 'OpenAI', maxTokenAllowed: 8000 },
+    { name: 'chanpingjingli', label: '产品经理', provider: 'OpenAI', maxTokenAllowed: 64000 },
   ];
 
   async getDynamicModels(

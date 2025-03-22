@@ -22,5 +22,4 @@ if ! pnpm typecheck; then
 fi
 
 
-
 echo "👍 All checks passed! Committing changes..."
