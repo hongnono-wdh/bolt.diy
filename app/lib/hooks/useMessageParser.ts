@@ -60,7 +60,14 @@ export function useMessageParser() {
 
     for (const [index, message] of messages.entries()) {
       if (message.role === 'assistant' || message.role === 'user') {
+
+
+        // 消息解析工具
         const newParsedContent = messageParser.parse(message.id, extractTextContent(message));
+
+
+
+
         setParsedMessages((prevParsed) => ({
           ...prevParsed,
           [index]: !reset ? (prevParsed[index] || '') + newParsedContent : newParsedContent,

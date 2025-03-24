@@ -97,8 +97,12 @@ export async function streamText(props: {
       cwd: WORK_DIR,
       allowedHtmlElements: allowedHTMLElements,
       modificationTagName: MODIFICATIONS_TAG_NAME,
+      role:'产品经理',
     }) ?? getSystemPrompt();
 
+
+
+    console.log('系统提示词：systemPrompt', systemPrompt);
   if (files && contextFiles && contextOptimization) {
     const codeContext = createFilesContext(contextFiles, true);
     const filePaths = getFilePaths(files);

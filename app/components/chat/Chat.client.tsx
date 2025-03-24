@@ -1,3 +1,27 @@
+/**
+ * Chat.client.tsx
+ * 
+ * 聊天组件实现文件
+ * -------------------
+ * 
+ * 功能概述：
+ * 该组件实现了一个完整的聊天界面，支持AI对话交互、消息历史记录管理、
+ * 文件上传、消息解析、滚动管理及模型提供商切换等功能。
+ * 
+ * 主要功能：
+ * - 支持与AI模型的实时对话交互
+ * - 消息历史记录的保存、导入和导出
+ * - 文件上传与图像处理
+ * - 支持自定义提示词与模板
+ * - 多种AI模型和提供商的切换功能
+ * - 消息解析和格式化显示
+ * - 提供消息通知和错误处理
+ * 
+ * 组件结构：
+ * - Chat: 主要组件，负责初始化和提供消息历史功能
+ * - ChatImpl: 实现具体聊天功能的内部组件
+ */
+
 /*
  * @ts-nocheck
  * Preventing TS checks with files presented in the video for a better presentation.
@@ -332,7 +356,7 @@ export const ChatImpl = memo(
                       type: 'image',
                       image: imageData,
                     })),
-                  ] as any,
+                  ] as any, // Type assertion to bypass compiler check
                 },
                 {
                   id: `2-${new Date().getTime()}`,
@@ -360,13 +384,68 @@ export const ChatImpl = memo(
 
               return;
             }
+            }
           }
+
+          // If autoSelectTemplate is disabled or template selection failed, proceed with normal message
+          setMessages([
+            {
+              id: `${new Date().getTime()}`,
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${messageContent}`,
+                },
+                ...imageDataList.map((imageData) => ({
+                  type: 'image',
+                  image: imageData,
+                })),
+              ] as any,
+            },
+          ]);
+          reload();
+          setFakeLoading(false);
+          setInput('');
+          Cookies.remove(PROMPT_COOKIE_KEY);
+
+          setUploadedFiles([]);
+          setImageDataList([]);
+
+          resetEnhancer();
+
+          textareaRef.current?.blur();
+
+          return;
         }
 
-        // If autoSelectTemplate is disabled or template selection failed, proceed with normal message
-        setMessages([
-          {
-            id: `${new Date().getTime()}`,
+        if (error != null) {
+          setMessages(messages.slice(0, -1));
+        }
+
+        const modifiedFiles = workbenchStore.getModifiedFiles();
+
+        chatStore.setKey('aborted', false);
+
+        if (modifiedFiles !== undefined) {
+          const userUpdateArtifact = filesToArtifacts(modifiedFiles, `${Date.now()}`);
+          append({
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userUpdateArtifact}${messageContent}`,
+              },
+              ...imageDataList.map((imageData) => ({
+                type: 'image',
+                image: imageData,
+              })),
+            ] as any,
+          });
+
+          workbenchStore.resetAllFileModifications();
+        } else {
+          append({
             role: 'user',
             content: [
               {
@@ -378,10 +457,9 @@ export const ChatImpl = memo(
                 image: imageData,
               })),
             ] as any,
-          },
-        ]);
-        reload();
-        setFakeLoading(false);
+          });
+        }
+
         setInput('');
         Cookies.remove(PROMPT_COOKIE_KEY);
 
@@ -391,161 +469,111 @@ export const ChatImpl = memo(
         resetEnhancer();
 
         textareaRef.current?.blur();
-
-        return;
-      }
-
-      if (error != null) {
-        setMessages(messages.slice(0, -1));
-      }
-
-      const modifiedFiles = workbenchStore.getModifiedFiles();
-
-      chatStore.setKey('aborted', false);
-
-      if (modifiedFiles !== undefined) {
-        const userUpdateArtifact = filesToArtifacts(modifiedFiles, `${Date.now()}`);
-        append({
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${userUpdateArtifact}${messageContent}`,
-            },
-            ...imageDataList.map((imageData) => ({
-              type: 'image',
-              image: imageData,
-            })),
-          ] as any,
-        });
-
-        workbenchStore.resetAllFileModifications();
-      } else {
-        append({
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${messageContent}`,
-            },
-            ...imageDataList.map((imageData) => ({
-              type: 'image',
-              image: imageData,
-            })),
-          ] as any,
-        });
-      }
-
-      setInput('');
-      Cookies.remove(PROMPT_COOKIE_KEY);
-
-      setUploadedFiles([]);
-      setImageDataList([]);
-
-      resetEnhancer();
-
-      textareaRef.current?.blur();
     };
 
-    /**
-     * Handles the change event for the textarea and updates the input state.
-     * @param event - The change event from the textarea.
-     */
-    const onTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      handleInputChange(event);
-    };
+      /**
+       * Handles the change event for the textarea and updates the input state.
+       * @param event - The change event from the textarea.
+       */
+      const onTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        handleInputChange(event);
+      };
 
-    /**
-     * Debounced function to cache the prompt in cookies.
-     * Caches the trimmed value of the textarea input after a delay to optimize performance.
-     */
-    const debouncedCachePrompt = useCallback(
-      debounce((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const trimmedValue = event.target.value.trim();
-        Cookies.set(PROMPT_COOKIE_KEY, trimmedValue, { expires: 30 });
-      }, 1000),
-      [],
-    );
+      /**
+       * Debounced function to cache the prompt in cookies.
+       * Caches the trimmed value of the textarea input after a delay to optimize performance.
+       */
+      const debouncedCachePrompt = useCallback(
+        debounce((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+          const trimmedValue = event.target.value.trim();
+          Cookies.set(PROMPT_COOKIE_KEY, trimmedValue, { expires: 30 });
+        }, 1000),
+        [],
+      );
 
-    const [messageRef, scrollRef] = useSnapScroll();
+      const [messageRef, scrollRef] = useSnapScroll();
 
-    useEffect(() => {
-      const storedApiKeys = Cookies.get('apiKeys');
+      useEffect(() => {
+        const storedApiKeys = Cookies.get('apiKeys');
 
-      if (storedApiKeys) {
-        setApiKeys(JSON.parse(storedApiKeys));
-      }
-    }, []);
+        if (storedApiKeys) {
+          setApiKeys(JSON.parse(storedApiKeys));
+        }
+      }, []);
 
-    const handleModelChange = (newModel: string) => {
-      setModel(newModel);
-      Cookies.set('selectedModel', newModel, { expires: 30 });
-    };
+      const handleModelChange = (newModel: string) => {
+        setModel(newModel);
+        Cookies.set('selectedModel', newModel, { expires: 30 });
+      };
 
-    const handleProviderChange = (newProvider: ProviderInfo) => {
-      setProvider(newProvider);
-      Cookies.set('selectedProvider', newProvider.name, { expires: 30 });
-    };
+      const handleProviderChange = (newProvider: ProviderInfo) => {
+        setProvider(newProvider);
+        Cookies.set('selectedProvider', newProvider.name, { expires: 30 });
+      };
 
-    return (
-      <BaseChat
-        ref={animationScope}
-        textareaRef={textareaRef}
-        input={input}
-        showChat={showChat}
-        chatStarted={chatStarted}
-        isStreaming={isLoading || fakeLoading}
-        onStreamingChange={(streaming) => {
-          streamingState.set(streaming);
-        }}
-        enhancingPrompt={enhancingPrompt}
-        promptEnhanced={promptEnhanced}
-        sendMessage={sendMessage}
-        model={model}
-        setModel={handleModelChange}
-        provider={provider}
-        setProvider={handleProviderChange}
-        providerList={activeProviders}
-        messageRef={messageRef}
-        scrollRef={scrollRef}
-        handleInputChange={(e) => {
-          onTextareaChange(e);
-          debouncedCachePrompt(e);
-        }}
-        handleStop={abort}
-        description={description}
-        importChat={importChat}
-        exportChat={exportChat}
-        messages={messages.map((message, i) => {
-          if (message.role === 'user') {
-            return message;
-          }
+      return (
+        <BaseChat
+          ref={animationScope}
+          textareaRef={textareaRef}
+          input={input}
+          showChat={showChat}
+          chatStarted={chatStarted}
+          isStreaming={isLoading || fakeLoading}
+          onStreamingChange={(streaming) => {
+            streamingState.set(streaming);
+          }}
+          enhancingPrompt={enhancingPrompt}
+          promptEnhanced={promptEnhanced}
+          sendMessage={sendMessage}
+          model={model}
+          setModel={handleModelChange}
+          provider={provider}
+          setProvider={handleProviderChange}
+          providerList={activeProviders}
+          messageRef={messageRef}
+          scrollRef={scrollRef}
+          handleInputChange={(e) => {
+            onTextareaChange(e);
+            debouncedCachePrompt(e);
+          }}
+          handleStop={abort}
+          description={description}
+          importChat={importChat}
+          exportChat={exportChat}
+          messages={messages.map((message, i) => {
 
-          return {
-            ...message,
-            content: parsedMessages[i] || '',
-          };
-        })}
-        enhancePrompt={() => {
-          enhancePrompt(
-            input,
-            (input) => {
-              setInput(input);
-              scrollTextArea();
-            },
-            model,
-            provider,
-            apiKeys,
-          );
-        }}
-        uploadedFiles={uploadedFiles}
-        setUploadedFiles={setUploadedFiles}
-        imageDataList={imageDataList}
-        setImageDataList={setImageDataList}
-        actionAlert={actionAlert}
-        clearAlert={() => workbenchStore.clearAlert()}
-        data={chatData}
-      />
-    );
-  },
-);
+
+            console.log('这个是所有的消息，打印出来看看', message.content);
+
+            if (message.role === 'user') {
+              return message;
+            }
+
+            return {
+              ...message,
+              content: parsedMessages[i] || '',
+            };
+          })}
+          enhancePrompt={() => {
+            enhancePrompt(
+              input,
+              (input) => {
+                setInput(input);
+                scrollTextArea();
+              },
+              model,
+              provider,
+              apiKeys,
+            );
+          }}
+          uploadedFiles={uploadedFiles}
+          setUploadedFiles={setUploadedFiles}
+          imageDataList={imageDataList}
+          setImageDataList={setImageDataList}
+          actionAlert={actionAlert}
+          clearAlert={() => workbenchStore.clearAlert()}
+          data={chatData}
+        />
+      );
+    },
+  );

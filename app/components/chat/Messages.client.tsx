@@ -56,6 +56,9 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
               const isLast = index === messages.length - 1;
               const isHidden = annotations?.includes('hidden');
 
+
+              console.log("内部消息组件message", message);
+
               if (isHidden) {
                 return <Fragment key={index} />;
               }

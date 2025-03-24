@@ -5,6 +5,7 @@ export interface PromptOptions {
   cwd: string;
   allowedHtmlElements: string[];
   modificationTagName: string;
+  role?: string;
 }
 
 export class PromptLibrary {
@@ -16,17 +17,22 @@ export class PromptLibrary {
       get: (options: PromptOptions) => string;
     }
   > = {
-    default: {
-      label: 'Default Prompt',
-      description: 'This is the battle tested default system Prompt',
-      get: (options) => getSystemPrompt(options.cwd),
-    },
-    optimized: {
-      label: 'Optimized Prompt (experimental)',
-      description: 'an Experimental version of the prompt for lower token usage',
-      get: (options) => optimized(options),
-    },
-  };
+      default: {
+        label: 'Default Prompt',
+        description: 'This is the battle tested default system Prompt',
+        get: (options) => getSystemPrompt(options.cwd, options.role),
+      },
+      chatWithRole: {
+        label: '带角色身份的提示词',
+        description: 'This is the battle tested default system Prompt',
+        get: (options) => getSystemPrompt(options.cwd, options.role),
+      },
+      optimized: {
+        label: 'Optimized Prompt (experimental)',
+        description: 'an Experimental version of the prompt for lower token usage',
+        get: (options) => optimized(options),
+      },
+    };
   static getList() {
     return Object.entries(this.library).map(([key, value]) => {
       const { label, description } = value;

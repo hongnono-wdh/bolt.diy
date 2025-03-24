@@ -1,3 +1,26 @@
+/**
+ * Artifact.tsx
+ * 
+ * 工件组件实现文件
+ * -------------------
+ * 
+ * 功能概述：
+ * 该组件用于显示和管理AI生成的工件（如文件、命令执行结果等）。
+ * 它提供了一个交互式界面，允许用户查看AI操作的结果并与工作台进行交互。
+ * 
+ * 主要功能：
+ * - 显示AI生成的工件信息
+ * - 提供工件相关操作的状态展示（运行中、完成、失败等）
+ * - 允许用户打开工作台查看详细信息
+ * - 支持代码高亮显示
+ * - 提供动画效果增强用户体验
+ * 
+ * 组件结构：
+ * - Artifact: 主要组件，负责展示工件信息和状态
+ * - ShellCodeBlock: 用于显示高亮的shell代码
+ * - ActionList: 展示工件相关的操作列表
+ */
+
 import { useStore } from '@nanostores/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { computed } from 'nanostores';
@@ -9,11 +32,18 @@ import { classNames } from '~/utils/classNames';
 import { cubicEasingFn } from '~/utils/easings';
 import { WORK_DIR } from '~/utils/constants';
 
+/**
+ * 高亮器配置选项，用于代码高亮显示
+ */
 const highlighterOptions = {
   langs: ['shell'],
   themes: ['light-plus', 'dark-plus'],
 };
 
+/**
+ * Shell代码高亮器实例
+ * 使用shiki库创建的代码高亮实例，支持热更新
+ */
 const shellHighlighter: HighlighterGeneric<BundledLanguage, BundledTheme> =
   import.meta.hot?.data.shellHighlighter ?? (await createHighlighter(highlighterOptions));
 
@@ -21,34 +51,51 @@ if (import.meta.hot) {
   import.meta.hot.data.shellHighlighter = shellHighlighter;
 }
 
+/**
+ * 工件组件的属性接口
+ */
 interface ArtifactProps {
-  messageId: string;
+  messageId: string; // 消息ID，用于关联工件和消息
 }
 
+/**
+ * 工件组件
+ * 显示AI生成的工件信息和相关操作
+ */
 export const Artifact = memo(({ messageId }: ArtifactProps) => {
-  const userToggledActions = useRef(false);
-  const [showActions, setShowActions] = useState(false);
-  const [allActionFinished, setAllActionFinished] = useState(false);
+  const userToggledActions = useRef(false); // 用户是否手动切换了操作显示状态
+  const [showActions, setShowActions] = useState(false); // 是否显示操作列表
+  const [allActionFinished, setAllActionFinished] = useState(false); // 所有操作是否已完成
 
+  // 从工作台存储中获取工件信息
   const artifacts = useStore(workbenchStore.artifacts);
   const artifact = artifacts[messageId];
 
+  // 获取当前工件的所有操作
   const actions = useStore(
     computed(artifact.runner.actions, (actions) => {
       return Object.values(actions);
     }),
   );
 
+  /**
+   * 切换操作列表的显示状态
+   */
   const toggleActions = () => {
     userToggledActions.current = true;
     setShowActions(!showActions);
   };
 
+  /**
+   * 监听操作列表变化，自动更新显示状态
+   */
   useEffect(() => {
+    // 如果有操作且未显示且用户未手动切换，则自动显示
     if (actions.length && !showActions && !userToggledActions.current) {
       setShowActions(true);
     }
 
+    // 检查bundled类型工件的所有操作是否完成
     if (actions.length !== 0 && artifact.type === 'bundled') {
       const finished = !actions.find((action) => action.status !== 'complete');
 
@@ -124,11 +171,18 @@ export const Artifact = memo(({ messageId }: ArtifactProps) => {
   );
 });
 
+/**
+ * Shell代码块组件属性接口
+ */
 interface ShellCodeBlockProps {
-  classsName?: string;
-  code: string;
+  classsName?: string; // 自定义CSS类名
+  code: string; // 要显示的代码内容
 }
 
+/**
+ * Shell代码块组件
+ * 使用高亮器渲染shell代码
+ */
 function ShellCodeBlock({ classsName, code }: ShellCodeBlockProps) {
   return (
     <div
@@ -143,23 +197,39 @@ function ShellCodeBlock({ classsName, code }: ShellCodeBlockProps) {
   );
 }
 
+/**
+ * 操作列表组件属性接口
+ */
 interface ActionListProps {
-  actions: ActionState[];
+  actions: ActionState[]; // 操作状态数组
 }
 
+/**
+ * 操作项动画变体配置
+ */
 const actionVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
 };
 
+/**
+ * 在工作台中打开工件文件
+ * @param filePath 文件路径
+ */
 function openArtifactInWorkbench(filePath: any) {
+  // 确保当前视图为代码视图
   if (workbenchStore.currentView.get() !== 'code') {
     workbenchStore.currentView.set('code');
   }
 
+  // 设置选中的文件
   workbenchStore.setSelectedFile(`${WORK_DIR}/${filePath}`);
 }
 
+/**
+ * 操作列表组件
+ * 显示工件相关的所有操作及其状态
+ */
 const ActionList = memo(({ actions }: ActionListProps) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}>
@@ -239,6 +309,11 @@ const ActionList = memo(({ actions }: ActionListProps) => {
   );
 });
 
+/**
+ * 根据操作状态获取图标颜色
+ * @param status 操作状态
+ * @returns 对应状态的CSS类名
+ */
 function getIconColor(status: ActionState['status']) {
   switch (status) {
     case 'pending': {
