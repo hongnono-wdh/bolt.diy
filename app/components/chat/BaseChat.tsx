@@ -25,6 +25,7 @@ import GitCloneButton from './GitCloneButton';
 import FilePreview from './FilePreview';
 import { ModelSelector } from '~/components/chat/ModelSelector';
 import { SpeechRecognitionButton } from '~/components/chat/SpeechRecognition';
+import { RoleSelector } from '~/components/chat/RoleSelector';
 import type { ProviderInfo } from '~/types/model';
 import { ScreenshotStateManager } from './ScreenshotStateManager';
 import { toast } from 'react-toastify';
@@ -568,6 +569,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                           disabled={isStreaming}
                         />
                         {chatStarted && <ClientOnly>{() => <ExportChatButton exportChat={exportChat} />}</ClientOnly>}
+                        
+                        {/* 角色选择器 */}
+                        <RoleSelector />
+                        
                         <IconButton
                           title="Model Settings"
                           className={classNames('transition-all flex items-center gap-1', {

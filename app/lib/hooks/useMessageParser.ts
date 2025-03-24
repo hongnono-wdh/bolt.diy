@@ -34,12 +34,18 @@ const messageParser = new StreamingMessageParser({
         workbenchStore.addAction(data);
       }
 
+
+      if(data.action.type === 'changerole'){
+        console.log("需要改变角色， 在标签结束的时候",data)
+
+      }
+
       workbenchStore.runAction(data);
     },
     onActionStream: (data) => {
       logger.trace('onActionStream', data.action);
       workbenchStore.runAction(data, true);
-    },
+    }
   },
 });
 const extractTextContent = (message: Message) =>

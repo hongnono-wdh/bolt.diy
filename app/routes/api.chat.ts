@@ -37,11 +37,12 @@ function parseCookies(cookieHeader: string): Record<string, string> {
 }
 
 async function chatAction({ context, request }: ActionFunctionArgs) {
-  const { messages, files, promptId, contextOptimization } = await request.json<{
+  const { messages, files, promptId, contextOptimization, role } = await request.json<{
     messages: Messages;
     files: any;
     promptId?: string;
     contextOptimization: boolean;
+    role?: string;
   }>();
 
   const cookieHeader = request.headers.get('Cookie');
@@ -230,19 +231,20 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               content: `[Model: ${model}]\n\n[Provider: ${provider}]\n\n${CONTINUE_PROMPT}`,
             });
 
-            const result = await streamText({
-              messages,
-              env: context.cloudflare?.env,
-              options,
-              apiKeys,
-              files,
-              providerSettings,
-              promptId,
-              contextOptimization,
-              contextFiles: filteredFiles,
-              summary,
-              messageSliceId,
-            });
+        const result = await streamText({
+          messages,
+          env: context.cloudflare?.env,
+          options,
+          apiKeys,
+          files,
+          providerSettings,
+          promptId,
+          contextOptimization,
+          contextFiles: filteredFiles,
+          summary,
+          messageSliceId,
+          role,
+        });
 
             result.mergeIntoDataStream(dataStream);
 
@@ -269,19 +271,20 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           message: 'Generating Response',
         } satisfies ProgressAnnotation);
 
-        const result = await streamText({
-          messages,
-          env: context.cloudflare?.env,
-          options,
-          apiKeys,
-          files,
-          providerSettings,
-          promptId,
-          contextOptimization,
-          contextFiles: filteredFiles,
-          summary,
-          messageSliceId,
-        });
+            const result = await streamText({
+              messages,
+              env: context.cloudflare?.env,
+              options,
+              apiKeys,
+              files,
+              providerSettings,
+              promptId,
+              contextOptimization,
+              contextFiles: filteredFiles,
+              summary,
+              messageSliceId,
+              role,
+            });
 
         (async () => {
           for await (const part of result.fullStream) {

@@ -164,6 +164,10 @@ export class ActionRunner {
           this.buildOutput = buildOutput;
           break;
         }
+        case 'changerole': {
+          await this.#runChangeRoleAction(action);
+          break;
+        }
         case 'start': {
           // making the start app non blocking
 
@@ -376,5 +380,31 @@ export class ActionRunner {
       exitCode,
       output,
     };
+  }
+
+  async #runChangeRoleAction(action: ActionState) {
+    if (action.type !== 'changerole') {
+      unreachable('Expected changerole action');
+    }
+
+    logger.debug('Running changerole action', action);
+
+    try {
+      // 解析内容，格式可能是 "角色名称|下一步内容"
+      const content = action.content.trim();
+      const role = action.role;
+      const nextStepContent = content.trim();
+      
+      // 动态导入roleStore以避免循环依赖
+      const { roleStore } = await import('~/lib/stores/role');
+      
+      // 使用roleStore设置角色和下一步内容
+      roleStore.set(role, nextStepContent);
+      
+      logger.debug('角色已自动切换为:', role);
+    } catch (e) {
+      logger.error('角色切换失败', e);
+      throw new Error('Failed to change role');
+    }
   }
 }

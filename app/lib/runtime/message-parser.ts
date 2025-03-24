@@ -1,4 +1,4 @@
-import type { ActionType, BoltAction, BoltActionData, FileAction, ShellAction } from '~/types/actions';
+import type { ActionType, BoltAction, BoltActionData, ChangeRoleAction, FileAction, ShellAction } from '~/types/actions';
 import type { BoltArtifactData } from '~/types/artifact';
 import { createScopedLogger } from '~/utils/logger';
 import { unreachable } from '~/utils/unreachable';
@@ -71,7 +71,7 @@ function cleanEscapedTags(content: string) {
 export class StreamingMessageParser {
   #messages = new Map<string, MessageState>();
 
-  constructor(private _options: StreamingMessageParserOptions = {}) {}
+  constructor(private _options: StreamingMessageParserOptions = {}) { }
 
 
   // 核心步骤1： 解析消息
@@ -117,14 +117,26 @@ export class StreamingMessageParser {
 
             let content = currentAction.content.trim();
 
-            if ('type' in currentAction && currentAction.type === 'file') {
-              // 特殊处理文件类型的Action：清理markdown语法等
-              if (!currentAction.filePath.endsWith('.md')) {
-                content = cleanoutMarkdownSyntax(content);
-                content = cleanEscapedTags(content);
-              }
+            if ('type' in currentAction) {
+              switch (currentAction.type) {
+                case "file":
+                  // 特殊处理文件类型的Action：清理markdown语法等
+                  if (!currentAction.filePath.endsWith('.md')) {
+                    content = cleanoutMarkdownSyntax(content);
+                    content = cleanEscapedTags(content);
+                  }
 
-              content += '\n';
+                  content += '\n';
+                  break;
+
+                case "changerole":
+                  console.log("主动切换角色", content);
+                  // 角色切换现在通过action-runner处理
+                  break;
+                  
+                default:
+                  break;
+              }
             }
 
             currentAction.content = content;
@@ -255,6 +267,7 @@ export class StreamingMessageParser {
               const artifactTitle = this.#extractAttribute(artifactTag, 'title') as string;
               const type = this.#extractAttribute(artifactTag, 'type') as string;
               const artifactId = this.#extractAttribute(artifactTag, 'id') as string;
+              const role = this.#extractAttribute(artifactTag, 'role') as string;
 
               // 验证必要属性
               if (!artifactTitle) {
@@ -273,6 +286,7 @@ export class StreamingMessageParser {
                 id: artifactId,
                 title: artifactTitle,
                 type,
+                role,
               } satisfies BoltArtifactData;
 
               state.currentArtifact = currentArtifact;
@@ -345,11 +359,20 @@ export class StreamingMessageParser {
       }
 
       (actionAttributes as FileAction).filePath = filePath;
-    } else if (!['shell', 'start'].includes(actionType)) {
+    } else if ([ 'changerole'].includes(actionType)) {
+      const role = this.#extractAttribute(actionTag, 'role') as string;
+      (actionAttributes as ChangeRoleAction ).role = role;
+
+      console.log("解析到了角色改变动作",actionAttributes)
+
+    }else if (!['shell', 'start', 'changerole'].includes(actionType)) {
       logger.warn(`Unknown action type '${actionType}'`);
+
+      
+
     }
 
-    return actionAttributes as FileAction | ShellAction;
+    return actionAttributes as FileAction | ShellAction | ChangeRoleAction;
   }
 
   #extractAttribute(tag: string, attributeName: string): string | undefined {
