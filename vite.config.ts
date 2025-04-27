@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 dotenv.config();
 
@@ -73,6 +74,13 @@ const gitInfo = getGitInfo();
 
 export default defineConfig((config) => {
   return {
+    server: {
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Resource-Policy': 'cross-origin'
+      },
+    },
     define: {
       __COMMIT_HASH: JSON.stringify(gitInfo.commitHash),
       __GIT_BRANCH: JSON.stringify(gitInfo.branch),
@@ -150,6 +158,7 @@ export default defineConfig((config) => {
       UnoCSS(),
       tsconfigPaths(),
       chrome129IssuePlugin(),
+      corsHeadersPlugin(),
       config.mode === 'production' && optimizeCssModules({ apply: 'build' }),
     ],
     envPrefix: [
@@ -168,6 +177,41 @@ export default defineConfig((config) => {
     },
   };
 });
+
+// 添加CORS头的插件，用于设置跨域策略
+function corsHeadersPlugin() {
+  return {
+    name: 'corsHeadersPlugin',
+    configureServer(server: ViteDevServer) {
+      // 为所有响应添加必要的跨域头
+      server.middlewares.use((req, res, next) => {
+        // 强制跨域隔离
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+        
+        // 关键资源跨域权限
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        
+        // 允许跨域请求
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+        // 允许iframe嵌套
+        res.removeHeader('X-Frame-Options');
+        res.setHeader('Content-Security-Policy', "frame-ancestors * 'self'");
+        
+        next();
+      });
+    },
+    transformIndexHtml(html: string): string {
+      // 为所有脚本和样式添加crossorigin属性
+      return html
+        .replace(/<script([^>]*)>/g, '<script crossorigin="anonymous"$1>')
+        .replace(/<link([^>]*)>/g, '<link crossorigin="anonymous"$1>');
+    }
+  };
+}
 
 function chrome129IssuePlugin() {
   return {

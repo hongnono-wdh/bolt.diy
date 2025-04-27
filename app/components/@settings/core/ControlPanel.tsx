@@ -433,7 +433,7 @@ export const ControlPanel = ({ open, onClose }: ControlPanelProps) => {
             <motion.div
               className={classNames(
                 'w-[1200px] h-[90vh]',
-                'bg-[#FAFAFA] dark:bg-[#0A0A0A]',
+                'bg-[#FAFAFA] dark:bg-[#101010]',
                 'rounded-2xl shadow-2xl',
                 'border border-[#E5E5E5] dark:border-[#1A1A1A]',
                 'flex flex-col overflow-hidden',

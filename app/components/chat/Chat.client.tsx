@@ -253,6 +253,7 @@ export const ChatImpl = memo(
       initialMessages,
       initialInput: Cookies.get(PROMPT_COOKIE_KEY) || '',
     });
+
     useEffect(() => {
       const prompt = searchParams.get('prompt');
 
@@ -327,15 +328,25 @@ export const ChatImpl = memo(
     }, [input, textareaRef]);
 
     const runAnimation = async () => {
+
+
+      // 动画已运行
+      console.log("runAnimation1", chatStarted);
       if (chatStarted) {
         return;
       }
 
+      
+      console.log("runAnimation2", chatStarted);
+      // animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 });
+      // animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn });
       await Promise.all([
-        animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 }),
+        // animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 }),
         animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn }),
       ]);
 
+      
+      console.log("runAnimation3", chatStarted);
       chatStore.setKey('started', true);
 
       setChatStarted(true);
@@ -344,6 +355,8 @@ export const ChatImpl = memo(
     const sendMessage = async (_event: React.UIEvent, messageInput?: string) => {
       const messageContent = messageInput || input;
 
+
+      console.log("sendMessage", messageContent, chatStarted);
       if (!messageContent?.trim()) {
         return;
       }
