@@ -1,4 +1,5 @@
 import { json, type MetaFunction } from '@remix-run/cloudflare';
+import { Link } from '@remix-run/react';
 import { ClientOnly } from 'remix-utils/client-only';
 import { BaseChat } from '~/components/chat/BaseChat';
 import { Chat } from '~/components/chat/Chat.client';
@@ -22,6 +23,17 @@ export default function Index() {
     <div className="flex flex-col h-full w-full bg-bolt-elements-background-depth-1">
       <BackgroundRays />
       <Header />
+      
+      {/* Hiring page navigation button - fixed position */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <Link 
+          to="/hiring" 
+          className="flex items-center gap-2 px-4 py-3 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md shadow-lg transition-all duration-300 font-medium"
+        >
+          <span className="i-carbon:user-profile text-xl"></span>
+          <span>Hiring Portal</span>
+        </Link>
+      </div>
       <ClientOnly fallback={<BaseChat />}>{() => <Chat />}</ClientOnly>
     </div>
   );

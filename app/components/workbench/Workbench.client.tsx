@@ -24,6 +24,7 @@ import { EditorPanel } from './EditorPanel';
 import { Preview } from './Preview';
 import useViewport from '~/lib/hooks';
 import { PushToGitHubDialog } from '~/components/@settings/tabs/connections/components/PushToGitHubDialog';
+import { RoleButtonSelector } from './EmployeeSelector';
 
 interface WorkspaceProps {
   chatStarted?: boolean;
@@ -121,6 +122,7 @@ const FileModifiedDropdown = memo(
                         <div className="i-ph:magnifying-glass" />
                       </div>
                     </div>
+
 
                     <div className="max-h-60 overflow-y-auto">
                       {filteredFiles.length > 0 ? (
@@ -371,6 +373,13 @@ export const Workbench = memo(
             )}
           >
             <div className="absolute inset-0 px-2 lg:px-6">
+             
+
+             {/* 角色选择器 */}
+             <div className="mb-3"> 
+                <RoleButtonSelector />
+             </div>
+                  
               <div className="h-full flex flex-col bg-bolt-elements-background-depth-2 border border-bolt-elements-borderColor shadow-sm rounded-lg overflow-hidden">
                 <div className="flex items-center px-3 py-2 border-b border-bolt-elements-borderColor">
                   <Slider selected={selectedView} options={sliderOptions} setSelected={setSelectedView} />
@@ -399,10 +408,10 @@ export const Workbench = memo(
                         <div className="i-ph:terminal" />
                         Toggle Terminal
                       </PanelHeaderButton>
-                      <PanelHeaderButton className="mr-1 text-sm" onClick={() => setIsPushDialogOpen(true)}>
+                      {/* <PanelHeaderButton className="mr-1 text-sm" onClick={() => setIsPushDialogOpen(true)}>
                         <div className="i-ph:git-branch" />
                         Push to GitHub
-                      </PanelHeaderButton>
+                      </PanelHeaderButton> */}
                     </div>
                   )}
                   {selectedView === 'diff' && (

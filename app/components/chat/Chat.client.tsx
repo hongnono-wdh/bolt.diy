@@ -254,6 +254,7 @@ export const ChatImpl = memo(
       initialInput: Cookies.get(PROMPT_COOKIE_KEY) || '',
     });
 
+    // 
     useEffect(() => {
       const prompt = searchParams.get('prompt');
 
