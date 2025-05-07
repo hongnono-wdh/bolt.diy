@@ -8,18 +8,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { roleStore } from '~/lib/stores/role';
+import { getRolePromptsList } from '~/lib/stores/rolePrompts';
 
-// 可用角色列表
-const ROLES = [
-  { id: '产品经理', name: '产品经理' },
-  { id: '前端开发工程师', name: '前端开发' },
-  { id: '后端开发工程师', name: '后端开发' }
-];
+// 从rolePrompts存储中获取角色列表
+const getRoles = () => {
+  return getRolePromptsList().map(role => ({
+    id: role.name,
+    name: role.name,
+    description: role.description
+  }));
+};
 
 export function RoleSelector() {
   // 使用roleStore获取当前角色
   const [currentRole, setCurrentRole] = useState(() => roleStore.get());
   const [isOpen, setIsOpen] = useState(false);
+  const [roles, setRoles] = useState(() => getRoles());
 
   // 订阅roleStore的变化
   useEffect(() => {
@@ -30,6 +34,22 @@ export function RoleSelector() {
     
     // 组件卸载时取消订阅
     return unsubscribe;
+  }, []);
+
+  // 监听角色列表变化
+  useEffect(() => {
+    const handleRoleListUpdate = () => {
+      // 角色列表更新时重新获取
+      setRoles(getRoles());
+    };
+    
+    // 添加事件监听
+    window.addEventListener('roleListUpdate', handleRoleListUpdate);
+    
+    // 组件卸载时移除事件监听
+    return () => {
+      window.removeEventListener('roleListUpdate', handleRoleListUpdate);
+    };
   }, []);
 
   // 选择角色并保存
@@ -48,7 +68,7 @@ export function RoleSelector() {
           className="flex items-center gap-2 text-xs text-bolt-elements-textSecondary hover:text-bolt-elements-textPrimary"
         >
           <span className="i-ph:user-gear-duotone"></span>
-          <span>{ROLES.find(r => r.id === currentRole)?.name || 'AI助手'}</span>
+          <span>{roles.find(r => r.id === currentRole)?.name || 'AI助手'}</span>
         </Button>
       </PopoverPrimitive.Trigger>
       <PopoverPrimitive.Portal>
@@ -57,13 +77,14 @@ export function RoleSelector() {
           sideOffset={5}
         >
           <div className="flex flex-col">
-            {ROLES.map((role) => (
+            {roles.map((role) => (
               <Button
                 key={role.id}
                 variant="ghost"
                 size="sm"
                 className={`justify-start text-left ${currentRole === role.id ? 'bg-bolt-elements-item-backgroundHover text-bolt-elements-textPrimary' : ''}`}
                 onClick={() => selectRole(role.id)}
+                title={role.description}
               >
                 {role.name}
               </Button>

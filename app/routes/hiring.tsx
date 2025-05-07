@@ -1,7 +1,9 @@
 import { json, type MetaFunction, type LoaderFunctionArgs } from '@remix-run/cloudflare';
-import { useLoaderData, useSearchParams, Form, Link } from '@remix-run/react';
+import { useLoaderData, useSearchParams, Form, Link, useNavigate } from '@remix-run/react';
 import { Header } from '~/components/header/Header';
 import { useState, useEffect } from 'react';
+import { useRolePromptsStore } from '~/lib/stores/rolePrompts';
+import { roleStore } from '~/lib/stores/role';
 
 // Employee type interface definition
 interface Employee {
@@ -219,7 +221,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 // Employee card component
 // 员工卡片组件 - 现在采用水平布局以适应一行一个的设计
-function EmployeeCard({ employee }: { employee: Employee }) {
+function EmployeeCard({ employee, onHire }: { employee: Employee; onHire: (employee: Employee) => void }) {
   return (
     <div className="bg-bolt-elements-background-depth-2 rounded-8 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 w-full relative">
       {/* 工具使用率指示器（右上角） */}
@@ -305,7 +307,10 @@ function EmployeeCard({ employee }: { employee: Employee }) {
             <span className="text-bolt-elements-textTertiary text-xs ml-2">年薪</span>
           </div>
           
-          <button className="px-8 py-2 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md transition-colors duration-300 font-medium">
+          <button 
+            onClick={() => onHire(employee)}
+            className="px-8 py-2 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md transition-colors duration-300 font-medium"
+          >
             雇佣
           </button>
         </div>
@@ -315,7 +320,7 @@ function EmployeeCard({ employee }: { employee: Employee }) {
 }
 
 // 搜索结果列表组件 - 与普通员工卡片保持一致的样式
-function SearchResultsList({ employees }: { employees: Employee[] }) {
+function SearchResultsList({ employees, onHire }: { employees: Employee[]; onHire: (employee: Employee) => void }) {
   return (
     <div className="flex flex-col space-y-4">
       {employees.map((employee) => (
@@ -401,7 +406,10 @@ function SearchResultsList({ employees }: { employees: Employee[] }) {
                 <span className="text-bolt-elements-textTertiary text-xs ml-2">年薪</span>
               </div>
               
-              <button className="px-8 py-2 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md transition-colors duration-300 font-medium">
+              <button 
+                onClick={() => onHire(employee)}
+                className="px-8 py-2 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md transition-colors duration-300 font-medium"
+              >
                 雇佣
               </button>
             </div>
@@ -417,6 +425,12 @@ export default function Hiring() {
   const { employees, searchQuery } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchQuery || '');
+  const [hiredEmployees, setHiredEmployees] = useState<number[]>([]);
+  const [hireMessage, setHireMessage] = useState<string>('');
+  const navigate = useNavigate();
+  
+  // 从 rolePrompts 存储中获取 addRolePrompt 函数
+  const addRolePrompt = useRolePromptsStore(state => state.addRolePrompt);
   
   // 获取returnUrl参数，默认为首页
   const returnUrl = searchParams.get('returnUrl') || '/';
@@ -435,6 +449,37 @@ export default function Hiring() {
     }
   };
   
+  // 处理雇佣操作
+  const handleHire = (employee: Employee) => {
+    // 如果已经雇佣过该员工，则不重复添加
+    if (hiredEmployees.includes(employee.id)) {
+      setHireMessage(`已经雇佣过 ${employee.name}！`);
+      setTimeout(() => setHireMessage(''), 3000);
+      return;
+    }
+    
+    // 添加角色提示词
+    addRolePrompt({
+      name: employee.position,
+      description: employee.description,
+      prompt: employee.description ? `<${employee.position}_role>\n${employee.description}\n</${employee.position}_role>` : ''
+    });
+    
+    // 添加到已雇佣列表
+    setHiredEmployees(prev => [...prev, employee.id]);
+    
+    // 显示成功消息
+    setHireMessage(`成功雇佣 ${employee.name}！已添加到角色提示词库`);
+    
+    // 3秒后清除消息
+    setTimeout(() => setHireMessage(''), 3000);
+    
+    // 如果当前没有选择角色，则自动设置为新雇佣的角色
+    if (!roleStore.get()) {
+      roleStore.set(employee.position);
+    }
+  };
+  
   return (
     <div className="flex flex-col min-h-screen bg-bolt-elements-background-depth-1">
       <Header />
@@ -443,10 +488,18 @@ export default function Hiring() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-bolt-elements-textPrimary">Employee Hiring</h1>
-            <Link to={returnUrl} className="px-4 py-2 bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary rounded-md transition-colors duration-300 flex items-center gap-2 border border-bolt-elements-borderColor">
-              <span className="i-carbon:arrow-left text-lg"></span>
-              <span>Back</span>
-            </Link>
+            <div className="flex items-center gap-3">
+              {hireMessage && (
+                <div className="px-4 py-2 bg-bolt-colors-success-500 text-bolt-elements-background-depth-1 rounded-md transition-all duration-300 flex items-center gap-2">
+                  <span className="i-carbon:checkmark-filled text-lg"></span>
+                  <span>{hireMessage}</span>
+                </div>
+              )}
+              <Link to={returnUrl} className="px-4 py-2 bg-bolt-elements-background-depth-2 hover:bg-bolt-elements-background-depth-3 text-bolt-elements-textPrimary rounded-md transition-colors duration-300 flex items-center gap-2 border border-bolt-elements-borderColor">
+                <span className="i-carbon:arrow-left text-lg"></span>
+                <span>Back</span>
+              </Link>
+            </div>
           </div>
           
           {/* Search form */}
@@ -538,7 +591,7 @@ export default function Hiring() {
                       DevOps
                     </button>
                   </div>
-                  <SearchResultsList employees={employees} />
+                  <SearchResultsList employees={employees} onHire={handleHire} />
                 </>
               ) : (
                 <div className="text-center py-12 bg-bolt-elements-background-depth-2 rounded-lg">
@@ -555,7 +608,7 @@ export default function Hiring() {
               
               <div className="flex flex-col space-y-4 w-full">
                 {employees.map(employee => (
-                  <EmployeeCard key={employee.id} employee={employee} />
+                  <EmployeeCard key={employee.id} employee={employee} onHire={handleHire} />
                 ))}
               </div>
             </div>
