@@ -138,6 +138,118 @@ const generateMockRolesData = (): RoleApiResponse[] => {
       created_at: '2025-05-03T10:10:00Z',
       updated_at: '2025-05-07T15:50:00Z',
       appId: '6818d5c2adf5217c84744891'
+    },
+    {
+      id: 7,
+      name: 'DevOps Engineer',
+      description: 'Responsible for infrastructure automation, CI/CD pipeline implementation, and ensuring reliable system operation. Proficient in cloud technologies, containerization, and monitoring tools.',
+      created_at: '2025-05-02T08:20:00Z',
+      updated_at: '2025-05-08T10:15:00Z',
+      appId: '6818d5d9adf5217c84744912'
+    },
+    {
+      id: 8,
+      name: 'UX Researcher',
+      description: 'Conducts user research to inform product design decisions. Specializes in usability testing, user interviews, and translating research findings into actionable insights for design teams.',
+      created_at: '2025-05-01T14:30:00Z',
+      updated_at: '2025-05-07T09:45:00Z',
+      appId: '6818d5f1adf5217c84745021'
+    },
+    {
+      id: 9,
+      name: 'Project Manager',
+      description: 'Oversees project planning, execution, and delivery. Skilled at resource allocation, risk management, and stakeholder communication to ensure successful project completion on time and within budget.',
+      created_at: '2025-05-03T11:25:00Z',
+      updated_at: '2025-05-06T13:50:00Z',
+      appId: '6818d602adf5217c84745142'
+    },
+    {
+      id: 10,
+      name: 'QA Engineer',
+      description: 'Ensures software quality through comprehensive testing methodologies. Experienced in creating test plans, automated testing, and identifying bugs before product release.',
+      created_at: '2025-05-04T09:10:00Z',
+      updated_at: '2025-05-07T16:30:00Z',
+      appId: '6818d618adf5217c84745234'
+    },
+    {
+      id: 11,
+      name: 'Mobile Developer',
+      description: 'Specialized in developing applications for iOS and Android platforms. Proficient in Swift, Kotlin, and cross-platform frameworks like React Native and Flutter.',
+      created_at: '2025-05-02T16:45:00Z',
+      updated_at: '2025-05-08T11:20:00Z',
+      appId: '6818d62eadf5217c84745389'
+    },
+    {
+      id: 12,
+      name: 'Cloud Architect',
+      description: 'Designs and implements cloud-based solutions with expertise in AWS, Azure, and Google Cloud Platform. Focuses on scalable, secure, and cost-effective cloud infrastructure.',
+      created_at: '2025-05-01T12:35:00Z',
+      updated_at: '2025-05-06T10:55:00Z',
+      appId: '6818d645adf5217c84745476'
+    },
+    {
+      id: 13,
+      name: 'Security Specialist',
+      description: 'Protects systems and data from cyber threats through security assessments, vulnerability testing, and implementation of security measures. Expert in both offensive and defensive security practices.',
+      created_at: '2025-05-03T13:15:00Z',
+      updated_at: '2025-05-07T11:40:00Z',
+      appId: '6818d65badf5217c84745563'
+    },
+    {
+      id: 14,
+      name: 'Content Writer',
+      description: 'Creates engaging and informative content for various platforms. Skilled in SEO writing, technical documentation, and marketing copy that drives user engagement.',
+      created_at: '2025-05-04T10:50:00Z',
+      updated_at: '2025-05-08T09:25:00Z',
+      appId: '6818d672adf5217c84745651'
+    },
+    {
+      id: 15,
+      name: 'Marketing Specialist',
+      description: 'Develops and executes marketing strategies to increase brand awareness and user acquisition. Experienced in digital marketing, social media campaigns, and conversion optimization.',
+      created_at: '2025-05-02T15:05:00Z',
+      updated_at: '2025-05-07T14:30:00Z',
+      appId: '6818d689adf5217c84745748'
+    },
+    {
+      id: 16,
+      name: 'HR Manager',
+      description: 'Manages human resources functions including recruitment, employee relations, and organizational development. Ensures compliance with labor laws and creates positive workplace culture.',
+      created_at: '2025-05-01T11:00:00Z',
+      updated_at: '2025-05-06T15:15:00Z',
+      appId: '6818d6a1adf5217c84745835'
+    },
+    {
+      id: 17,
+      name: 'Systems Analyst',
+      description: 'Analyzes business requirements and designs IT systems to meet organizational needs. Bridges the gap between business and technical teams to ensure solutions address core business challenges.',
+      created_at: '2025-05-03T08:40:00Z',
+      updated_at: '2025-05-08T12:10:00Z',
+      appId: '6818d6b7adf5217c84745927'
+    },
+    {
+      id: 18,
+      name: 'Database Administrator',
+      description: 'Manages database systems ensuring data integrity, security, and optimal performance. Expert in SQL, database design, and data recovery procedures across multiple database platforms.',
+      created_at: '2025-05-04T14:25:00Z',
+      updated_at: '2025-05-07T10:00:00Z',
+      appId: '6818d6ceadf5217c84746018'
+    },
+    {
+      id: 19,
+      name: 'Network Engineer',
+      description: 'Designs and implements network infrastructure for reliable and secure connectivity. Specialist in routing, switching, network security, and troubleshooting complex network issues.',
+      created_at: '2025-05-02T09:55:00Z',
+      updated_at: '2025-05-06T17:30:00Z',
+      appId: '6818d6e4adf5217c84746109'
+    },
+    {
+      id: 20,
+      name: 'Machine Learning Engineer',
+      description: 'Develops AI and machine learning models to solve complex business problems. Proficient in data science, algorithm design, and implementing machine learning systems in production environments.',
+      created_at: '2025-05-01T16:15:00Z',
+      updated_at: '2025-05-08T13:45:00Z',
+      appId: '6818d6fadf5217c84746198'
     }
   ];
   
@@ -299,14 +411,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('q') || '';
   console.log('搜索查询参数:', searchQuery);
-  
+
   console.log('开始获取员工数据...');
   // 从API获取所有员工数据
   const allEmployees = await fetchEmployeesData();
   console.log(`获取到${allEmployees.length}条员工数据`);
-  
+
   let filteredEmployees = allEmployees;
-  
+
   // 如果有搜索查询，过滤员工列表
   if (searchQuery) {
     console.log(`开始根据"${searchQuery}"过滤员工列表...`);
@@ -315,12 +427,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       const matchesPosition = employee.position.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesDepartment = employee.department.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSkill = employee.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+
       return matchesName || matchesPosition || matchesDepartment || matchesSkill;
     });
     console.log(`搜索结果: 找到${filteredEmployees.length}条匹配的员工记录`);
   }
-  
+
   console.log('----- Loader函数完成 -----');
   return json({
     employees: filteredEmployees,
@@ -334,161 +446,285 @@ function useLoading() {
   const Loading = ({ children }: { children: React.ReactNode }) => (
     isLoading ? <div>{children}</div> : null
   );
-  
+
   return { isLoading, setIsLoading, Loading };
 }
 
-// 员工卡片组件 - 新设计风格
-function EmployeeCard({ employee, onHire }: { employee: Employee; onHire: (employee: Employee) => void }) {
+// 团队卡片组件 - 新设计风格
+interface TeamMember {
+  name: string;
+  position: string;
+  avatar?: string;
+}
+
+interface Team {
+  id: number;
+  name: string;
+  members: TeamMember[];
+  description: string;
+  hiringPrice: number;
+  originalId?: string;
+}
+
+function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }) {
   const { isLoading, setIsLoading } = useLoading();
-  
-  // 技能图标列表
-  const getSkillIcon = (index: number) => {
-    const icons = [
-      // 位置图标
-      <svg key="location" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7c7c7c"/>
-      </svg>,
-      // 教育图标
-      <svg key="education" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" fill="#7c7c7c"/>
-      </svg>,
-      // 用户警告图标
-      <svg key="alert" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#7c7c7c"/>
-      </svg>
-    ];
-    return icons[index % icons.length];
-  };
-  
+
   // 开发者图标
   const DeveloperIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="#7c7c7c"/>
-    </svg>
-  );
-  
-  // 存钱罐图标
-  const SavingIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M19.83 7.5l-2.27-2.27c.07-.42.18-.81.32-1.15.1-.25.18-.48.25-.71-1.96.23-3.51 1.34-4.01 2.04l-4.59.14C8.53 4.38 7.29 3.59 4.97 3.5c.07.23.15.46.24.7.81 1.69 2.34 2.8 4.01 3.01l.77 1.93c-3.21.81-5.49 3.7-5.49 7.05 0 .47.04.93.13 1.37.32 1.55 1.14 2.9 2.27 3.94v-2.5h1.97c1.19 0 2.3-.35 3.26-.96-.51-.76-.8-1.65-.8-2.54 0-1.33.57-2.64 1.59-3.61 1.02-.97 2.36-1.47 3.77-1.39 1.43.08 2.86.86 3.91 2.15 1.05 1.29 1.49 2.89 1.23 4.36-.12.68-.4 1.31-.83 1.82l.27.28c1.02-.97 1.77-2.19 2.13-3.58.37-1.39.19-2.92-.4-4.26L22 7.37c-.4-.34-.89-.57-1.4-.68l-.54-.08-.23-.47zM7.5 12.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm10.24 6.17l-1.15 1.15c-1.48-1.48-3.9-1.5-5.4-.06l-1.2-1.2c2.3-2.3 6.05-2.28 8.37-.27l-.62.38zM13.5 14c0 .83.67 1.5 1.5 1.5.16 0 .31-.03.46-.07l.96.96c-.43.17-.9.26-1.42.26-1.93 0-3.5-1.57-3.5-3.5 0-.76.25-1.47.67-2.04l.9.52L13.1 13c.25.61.82 1 1.4 1v-1.5l-1.49.5-.46-1.1 1.17-.5.36-.87.83.37.22.5h1.87c-.09-.39-.26-.75-.51-1.07-.98-1.21-2.7-1.41-4.02-.47-.67.47-1.12 1.19-1.26 2l-.81-.36c.19-1.15.82-2.15 1.71-2.82 1.73-1.3 4.11-1.04 5.56.6.71.8 1.08 1.79 1.08 2.79 0 1.35-.66 2.67-1.93 3.47l-.4-.93c.96-.59 1.54-1.61 1.54-2.72 0-.14-.01-.28-.04-.42h-2.7l-1.86-2.24-2 3.1-2.24-.73 1.55-3.17 1.75 1.9z" fill="#7c7c7c"/>
+      <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="#7c7c7c" />
     </svg>
   );
 
-  const handleHireWithLoading = async (employee: Employee) => {
+  // 存钱罐图标
+  const SavingIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M19.83 7.5l-2.27-2.27c.07-.42.18-.81.32-1.15.1-.25.18-.48.25-.71-1.96.23-3.51 1.34-4.01 2.04l-4.59.14C8.53 4.38 7.29 3.59 4.97 3.5c.07.23.15.46.24.7.81 1.69 2.34 2.8 4.01 3.01l.77 1.93c-3.21.81-5.49 3.7-5.49 7.05 0 .47.04.93.13 1.37.32 1.55 1.14 2.9 2.27 3.94v-2.5h1.97c1.19 0 2.3-.35 3.26-.96-.51-.76-.8-1.65-.8-2.54 0-1.33.57-2.64 1.59-3.61 1.02-.97 2.36-1.47 3.77-1.39 1.43.08 2.86.86 3.91 2.15 1.05 1.29 1.49 2.89 1.23 4.36-.12.68-.4 1.31-.83 1.82l.27.28c1.02-.97 1.77-2.19 2.13-3.58.37-1.39.19-2.92-.4-4.26L22 7.37c-.4-.34-.89-.57-1.4-.68l-.54-.08-.23-.47zM7.5 12.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="#7c7c7c" />
+    </svg>
+  );
+
+  // 团队图标
+  const TeamIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="#7c7c7c" />
+    </svg>
+  );
+
+  const handleHireWithLoading = async (team: Team) => {
     setIsLoading(true);
     try {
-      await onHire(employee);
+      await onHire(team);
     } finally {
       // 如果onHire函数在重定向前返回，确保3秒后重置加载状态
       setTimeout(() => setIsLoading(false), 3000);
     }
   };
 
+  // 生成团队成员头像
+  const renderTeamMemberAvatar = (member: TeamMember) => {
+    return (
+      <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0">
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-700">
+          <div className="text-white text-lg font-bold">
+            {member.name ? member.name.charAt(0).toUpperCase() : 'U'}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // 右箭头图标
+  const RightArrowIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" fill="#7c7c7c" />
+    </svg>
+  );
+
   return (
-    <div className="bg-[#1a1a1a] rounded-[36px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 w-full mb-5 relative">
-      {/* 工具使用率指示器 (右上角) */}
-      <div className="absolute top-[30px] right-[20px] z-10">
-        <div className="px-3 py-1 rounded-full bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] flex items-center">
-          <DeveloperIcon />
-          <span className="text-sm text-[#888] mr-1 ml-2">Field：</span>
-          <span className="text-sm text-white">Tool Utilization</span>
+    <div className="bg-[#1a1a1a] rounded-[20px] shadow-lg mb-5 relative overflow-hidden">
+      {/* 团队指示器 (右上角) */}
+      <div className="absolute top-[15px] right-[15px] z-10">
+        <div className="px-2 py-1 rounded-full bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] flex items-center">
+          <TeamIcon />
+          <span className="text-xs text-white ml-1">Team</span>
         </div>
       </div>
 
-      <div className="flex flex-col">
-        {/* 上部信息区域 */}
-        <div className="p-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* 左侧：头像和基本信息 */}
-            <div className="flex items-start gap-4 flex-1">
-              {/* 双层边框头像 */}
-              <div className="rounded-[36px] p-1.5 border-[3px] border-[#353535] mr-[10px]">
-                <div className="w-[180px] h-[180px] rounded-[32px] border-2 border-[#353535] bg-[#353535] overflow-hidden">
-                  {/* 使用内联SVG而不是外部请求 */}
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-700">
-                    <div className="text-white text-[60px] font-bold">
-                      {employee.name ? employee.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
+      {/* 团队名称和基本信息 */}
+      <div className="px-4 pt-4 pb-2">
+        <h2 className="text-white text-lg font-bold mb-1">{team.name}</h2>
+      
+      </div>
+
+      {/* 水平滚动区域 - 成员卡片 (上方显示) */}
+      <div className="px-4 pb-3 pt-2 border-t border-[#2c2c2c]">
+        <h3 className="text-white text-sm font-medium mb-3 flex items-center">
+          <span>Team Members ({team.members.length})</span>
+        </h3>
+        <div className="overflow-x-auto hide-scrollbar">
+          <div className="flex space-x-4 min-w-max pb-2"> {/* 水平排列的成员卡片区 */}
+            {team.members.map((member, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 bg-[#252525] rounded-lg p-3 cursor-pointer hover:bg-[#303030] transition-colors w-[180px]"
+                onClick={() => alert(`Selected team member: ${member.name}`)}
+              >
+                <div className="flex items-center mb-2">
+                  {renderTeamMemberAvatar(member)}
+                  <div className="ml-3 flex-1 min-w-0">
+                    <div className="text-white font-medium text-sm truncate">{member.name}</div>
+                    <div className="text-[#888] text-xs truncate">{member.position}</div>
                   </div>
                 </div>
               </div>
-
-              <div className="flex flex-col flex-1">
-                <h3 className="text-[20px] font-normal text-white mb-1">{employee.name}</h3>
-                <p className="text-[#888] text-sm">{employee.position}</p>
-
-                {/* 技能标签组 */}
-                <div className="flex flex-wrap gap-2 my-6">
-                  {employee.skills.map((skill, index) => (
-                    <span 
-                      key={index}
-                      className="px-5 py-2 rounded-full bg-[#101010] text-white border border-[#2c2c2c] hover:bg-[#1c1c1c] transition-all duration-200 select-none flex items-center"
-                    >
-                      <span className="mr-2">{getSkillIcon(index)}</span>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <p className="text-[#888] text-sm mb-3">{employee.description}</p>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
-
-        {/* 底部：雇佣价格和雇佣按钮 */}
-        <div className="px-6 py-4 flex justify-between items-center bg-[#262626]">
-          <div className="flex items-center">
-            <SavingIcon />
-            <span className="text-[#888] font-normal text-base ml-2">Hiring Price:</span>
-            <span className="text-white text-base ml-2">Free</span>
-          </div>
-
-          <button
-            onClick={() => handleHireWithLoading(employee)}
-            disabled={isLoading}
-            className="px-8 py-2 text-lg h-[40px] bg-white hover:bg-[rgba(255,255,255,0.9)] text-[#101010] rounded-[50px] font-black border-none disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Hiring...' : 'Hire'}
-          </button>
         </div>
       </div>
 
-      {/* 全屏加载 */}
-      {isLoading && (
-        <div className="fixed z-[1500] bg-[rgba(0,0,0,0.7)] inset-0 flex items-center justify-center flex-col">
-          <div 
-            className="w-[40px] h-[40px] rounded-full border-[3px] border-[rgba(255,255,255,0.1)] border-t-white mb-4"
-            style={{ animation: 'spin 1s linear infinite' }}
-          />
-          <div className="text-white font-bold text-md">
-            Hiring in progress...
-          </div>
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+      {/* 团队简介 (下方显示) */}
+      <div className="px-4 py-3 border-t border-[#2c2c2c]">
+        <h3 className="text-white text-sm font-medium mb-1 flex items-center">
+          <TeamIcon />
+          <span className="ml-2">Team Overview</span>
+        </h3>
+        <p className="text-[#7c7c7c] text-xs leading-5">{team.description}</p>
+      </div>
+
+      {/* 下部悬浮操作区域 */}
+      <div className="flex justify-between items-center px-4 py-3 bg-[#252525] border-t border-[#2c2c2c]">
+        <div className="text-[#7c7c7c] flex items-center text-xs">
+          <SavingIcon />
+          <span className="ml-2">{team.hiringPrice} credits/hr</span>
         </div>
-      )}
+
+        <button
+          onClick={() => handleHireWithLoading(team)}
+          disabled={isLoading}
+          className="
+            px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-full 
+            flex items-center justify-center transition-all 
+            disabled:bg-gray-600 disabled:cursor-not-allowed
+          "
+        >
+          {isLoading ? (
+            <>
+              <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+              <span>Hiring...</span>
+            </>
+          ) : (
+            <span>Hire Team</span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
 
+// 加载中组件
+function Loading() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <div className="text-[#888] text-lg">Loading...</div>
+    </div>
+  );
+}
+
+// 隐藏滚动条的样式
+const globalStyles = `
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+`;
+
+// 全局样式组件
+function GlobalStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: globalStyles }} />;
+}
+
+// 将Employee转换为Team的工具函数
+function convertEmployeesToTeam(employees: Employee[]): Team[] {
+  // 将员工分组成团队，每10个员工一组
+  const teams: Team[] = [];
+  
+  // 团队名称列表
+  const teamNames = [
+    'Alpha Team', 'Beta Team', 'Omega Squad', 'Phoenix Group', 
+    'Quantum Tech', 'Titan Collective', 'Horizon Innovators', 'Apex Solutions',
+    'Nebula Developers', 'Fusion Alliance', 'Zenith Creators', 'Pulse Team',
+    'Vertex Engineers', 'Pinnacle Experts', 'Catalyst Group', 'Echo Team'
+  ];
+  
+  // 每10个员工分组
+  for (let i = 0; i < employees.length; i += 10) {
+    // 取出当前团队成员（最多10个）
+    const teamEmployees = employees.slice(i, i + 10);
+    
+    // 如果团队成员少于3个，跳过不创建团队
+    if (teamEmployees.length < 3) continue;
+    
+    // 创建团队成员数组
+    const members: TeamMember[] = teamEmployees.map(emp => ({
+      name: emp.name,
+      position: emp.position,
+      avatar: emp.avatar
+    }));
+    
+    // 使用主要部门作为团队类型
+    const departments = teamEmployees.map(emp => emp.department);
+    const departmentCounts: Record<string, number> = {};
+    departments.forEach(dept => {
+      departmentCounts[dept] = (departmentCounts[dept] || 0) + 1;
+    });
+    
+    // 找出出现次数最多的部门
+    let mainDepartment = 'Cross-functional';
+    let maxCount = 0;
+    for (const [dept, count] of Object.entries(departmentCounts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        mainDepartment = dept;
+      }
+    }
+    
+    // 生成团队名字
+    const teamNameIndex = Math.min(Math.floor(i / 10), teamNames.length - 1);
+    const teamName = `${teamNames[teamNameIndex]} (${mainDepartment})`;
+    
+    // 生成团队描述
+    let keyPositions = teamEmployees.slice(0, 3).map(e => e.position).join(', ');
+    if (teamEmployees.length > 3) {
+      keyPositions += `, and ${teamEmployees.length - 3} more positions`;
+    }
+    
+    const description = `A collaborative team of professionals with expertise in ${keyPositions}. This team specializes in ${mainDepartment} projects and brings diverse skills to address complex challenges.`;
+    
+    // 创建团队对象
+    const team: Team = {
+      id: teamEmployees[0].id,
+      name: teamName,
+      members,
+      description,
+      hiringPrice: teamEmployees.reduce((sum, emp) => sum + emp.hiringPrice, 0) / teamEmployees.length, // 平均价格
+      originalId: teamEmployees[0].originalId
+    };
+    
+    teams.push(team);
+  }
+  
+  return teams;
+}
+
 // 搜索结果列表组件 - 使用新的黑色UI风格设计
 function SearchResultsList({ employees, onHire }: { employees: Employee[]; onHire: (employee: Employee) => void }) {
+  // 将Employee转换为Team
+  const teams = convertEmployeesToTeam(employees);
+  
+  // 封装onHire函数以兼容现有通过传入employee的函数
+  const handleTeamHire = (team: Team) => {
+    // 找到团队对应的第一个员工并雇佣
+    const employeeToHire = employees.find(emp => emp.id === team.id);
+    if (employeeToHire) {
+      onHire(employeeToHire);
+    }
+  };
+  
   return (
     <div className="flex flex-col space-y-4">
-      {employees.map((employee) => (
-        <div key={employee.id}>
-          <EmployeeCard key={employee.id} employee={employee} onHire={onHire} />
+      {teams.map((team) => (
+        <div key={team.id}>
+          <TeamCard key={team.id} team={team} onHire={handleTeamHire} />
         </div>
       ))}
     </div>
   );
 }
+
 // 主页面组件
 export default function Hiring() {
   const { employees, searchQuery } = useLoaderData<typeof loader>();
@@ -510,6 +746,9 @@ export default function Hiring() {
     setSearchTerm(searchQuery);
   }, [searchQuery]);
   
+  // 热门搜索词
+  const popularSearches = ['Developer', 'Design', 'Python', 'Product', 'DevOps'];
+  
   // 处理搜索提交
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     if (!searchTerm.trim()) {
@@ -519,228 +758,20 @@ export default function Hiring() {
     }
   };
   
-  // 保存员工数据到本地存储
-  const saveEmployeeToLocalStorage = async (
-    employee: Employee,
-    apiData: any,
-    shareId: string,
-    appId: string
-  ) => {
-    try {
-      console.log('员工信息', employee);
-
-      // 安全检查确保员工对象存在
-      if (!employee) {
-        console.error('Employee object is undefined');
-        return false;
-      }
-
-      // 将头像图片转换为base64以便离线存储
-      let avatarBase64 = '';
-      try {
-        // 安全访问avatar属性并提供默认回退
-        const avatarUrl =
-          employee.avatar ||
-          'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23ccc%22%3E%3Cpath%20d%3D%22M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z%22%2F%3E%3C%2Fsvg%3E';
-
-        // 仅在它是有效URL时尝试获取
-        if (avatarUrl && avatarUrl.startsWith('http')) {
-          const avatarResponse = await fetch(avatarUrl);
-          const avatarBlob = await avatarResponse.blob();
-          avatarBase64 = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(avatarBlob);
-          });
-        } else {
-          // 如果已经是数据URL则直接使用
-          avatarBase64 = avatarUrl;
-        }
-      } catch (error) {
-        console.error('Failed to convert avatar to base64:', error);
-        // 如果转换失败，使用默认头像
-        avatarBase64 =
-          employee.avatar ||
-          'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23ccc%22%3E%3Cpath%20d%3D%22M12%2012c2.21%200%204-1.79%204-4s-1.79-4-4-4-4%201.79-4%204%201.79%204%204%204zm0%202c-2.67%200-8%201.34-8%204v2h16v-2c0-2.66-5.33-4-8-4z%22%2F%3E%3C%2Fsvg%3E';
-      }
-
-      // 创建员工数据对象
-      const employeeData = {
-        employee: {
-          ...employee,
-          avatar: avatarBase64 // 用base64替换URL
-        },
-        apiData,
-        shareId,
-        appId,
-        timestamp: Date.now()
-      };
-
-      // 获取现有雇佣员工列表或初始化新列表
-      let hiredEmployees = [];
-      const existingData = localStorage.getItem('hiredEmployees');
-
-      if (existingData) {
-        try {
-          hiredEmployees = JSON.parse(existingData);
-          if (!Array.isArray(hiredEmployees)) {
-            hiredEmployees = [];
-          }
-        } catch (error) {
-          console.error('Error parsing existing hired employees:', error);
-          hiredEmployees = [];
-        }
-      }
-
-      // 检查是否已存在同一shareId的员工
-      const existingIndex = hiredEmployees.findIndex((item) => item.shareId === shareId);
-
-      if (existingIndex >= 0) {
-        // 更新现有员工数据
-        hiredEmployees[existingIndex] = employeeData;
-      } else {
-        // 添加新员工到列表
-        hiredEmployees.push(employeeData);
-      }
-
-      // 保存更新后的列表到本地存储
-      localStorage.setItem('hiredEmployees', JSON.stringify(hiredEmployees));
-
-      // 为了向后兼容，也作为单个员工保存
-      localStorage.setItem('hiredEmployee', JSON.stringify(employeeData));
-
-      console.log('Employee data saved to local storage:', employeeData);
-      console.log('Updated hired employees list:', hiredEmployees);
-      return true;
-    } catch (error) {
-      console.error('Error saving to local storage:', error);
-      return false;
-    }
-  };
-  
-  // 获取shareId并重定向到分享页面
-  const fetchShareIdAndRedirect = async (appId: string, employee: Employee) => {
-    // 定义回退数据类型
-    type FallbackDataType = {
-      [key: string]: {
-        shareId: string;
-        appId: string;
-      };
-    };
-
-    // API请求失败时使用的回退数据
-    const fallbackData: FallbackDataType = {
-      // 映射appIds到相应的shareIds
-      '6818d590adf5217c8474471d': {
-        shareId: '19hinkk9lfm6zracv1k0pqsj',
-        appId: '6818d590adf5217c8474471d'
-      },
-      '6818d4b1adf5217c8474415b': {
-        shareId: '7amk87r93mb3eam5sirtr1th',
-        appId: '6818d4b1adf5217c8474415b'
-      },
-      '6818d51aadf5217c84744494': {
-        shareId: 'b2s5azttlehawgrjdf8d53bm',
-        appId: '6818d51aadf5217c84744494'
-      },
-      '6818d586adf5217c84744643': {
-        shareId: 'nwfali1jr6uxv2n5wj92oqlt',
-        appId: '6818d586adf5217c84744643'
-      }
-    };
-
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `${API_CONFIG.API_BASE_URL}/api/support/outLink/list?appId=${appId}&type=share`,
-        {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json, text/plain, */*',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${API_CONFIG.FASTGPT_API_KEY}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`API response error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json() as ShareIdApiResponse;
-      console.log('ShareId API response:', data);
-
-      if (data.code === 200 && Array.isArray(data.data) && data.data.length > 0) {
-        const shareId = data.data[0].shareId;
-        if (shareId) {
-          // 保存数据到本地存储
-          await saveEmployeeToLocalStorage(employee, data, shareId, appId);
-
-          // 重定向到分享页面
-          window.location.href = `${API_CONFIG.API_BASE_URL}/chat/share?shareId=${shareId}`;
-          return;
-        }
-      }
-      throw new Error('No valid shareId found in response');
-    } catch (error) {
-      console.error('Error fetching shareId:', error);
-
-      // 如果存在此appId的回退数据，则使用它
-      if (fallbackData[appId]) {
-        const fallbackShareId = fallbackData[appId].shareId;
-        console.log(`Using fallback shareId for appId ${appId}: ${fallbackShareId}`);
-
-        // 创建类似API响应的模拟数据结构
-        const mockData = {
-          code: 200,
-          data: [
-            {
-              shareId: fallbackShareId,
-              appId: appId
-            }
-          ]
-        };
-
-        // 保存数据到本地存储
-        await saveEmployeeToLocalStorage(employee, mockData, fallbackShareId, appId);
-
-        // 重定向到分享页面
-        window.location.href = `${API_CONFIG.API_BASE_URL}/chat/share?shareId=${fallbackShareId}`;
-        return;
-      }
-
-      // 如果没有可用的回退，显示错误消息
-      setHireMessage(
-        `Task assignment error: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
-      setTimeout(() => setHireMessage(''), 3000);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
   // 处理雇佣操作
   const handleHire = (employee: Employee) => {
-    // 检查员工是否有原始appId
-    const originalId = employee.originalId;
-    if (!originalId) {
-      setHireMessage(`Unable to assign tasks to ${employee.name}: No valid application ID`);
+    // 这里简化了雇佣逻辑，实际应用中会有更复杂的处理
+    console.log(`雇佣员工: ${employee.name}`);
+    setHireMessage(`正在分配任务给 ${employee.name}...`);
+    setTimeout(() => {
+      setHireMessage(`成功雇佣了 ${employee.name}!`);
       setTimeout(() => setHireMessage(''), 3000);
-      return;
-    }
-
-    // 显示临时消息
-    setHireMessage(`Assigning tasks to ${employee.name}...`);
-
-    // 获取shareId并重定向
-    fetchShareIdAndRedirect(originalId, employee);
+    }, 1500);
   };
-  
-  // 热门搜索词
-  const popularSearches = ['Developer', 'Design', 'Python', 'Product', 'DevOps'];
   
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0a0a]">
+      <GlobalStyles />
       <Header />
       
       <main className="flex-grow p-6">
@@ -750,191 +781,19 @@ export default function Hiring() {
             <div className="flex items-center gap-3">
               {hireMessage && (
                 <div className="px-4 py-2 bg-[#333333] text-white rounded-md transition-all duration-300 flex items-center gap-2">
-                  <span className="w-4 h-4">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
-                    </svg>
-                  </span>
                   <span>{hireMessage}</span>
                 </div>
               )}
               <Link to={returnUrl} className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white rounded-full transition-colors duration-300 flex items-center gap-2 border border-[#2c2c2c]">
-                <span className="w-4 h-4">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
-                  </svg>
-                </span>
                 <span>Back</span>
               </Link>
             </div>
           </div>
           
-          {/* 搜索区域 */}
-          <div className="mb-8 bg-[#1a1a1a] rounded-[36px] p-6">
-            <div className="mb-2">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-normal text-white mb-3">Search</h2>
-              </div>
-              
-              {/* 搜索表单 */}
-              <Form method="get" className="mb-4" onSubmit={handleSubmit}>
-                <div className="flex items-center justify-between">
-                  {/* 左侧：搜索输入和筛选器 */}
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="flex flex-1">
-                      <input
-                        type="text"
-                        name="q"
-                        placeholder="Search positions or keywords..."
-                        className="flex-1 px-5 py-2.5 rounded-l-full bg-[#1a1a1a] border border-[#2c2c2c] text-white focus:outline-none"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                      <button
-                        type="button"
-                        className="px-4 py-2.5 bg-[#1a1a1a] border border-[#2c2c2c] border-l-0 rounded-r-full text-white font-normal flex items-center gap-2"
-                      >
-                        <span>All Categories</span>
-                        <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                          <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                        </span>
-                      </button>
-                    </div>
-                    
-                    <button
-                      type="button"
-                      className="px-4 py-2.5 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                    >
-                      <span className="w-4 h-4">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7c7c7c"/>
-                        </svg>
-                      </span>
-                      <span>All Locations</span>
-                      <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                        <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                      </span>
-                    </button>
-                    
-                    <button
-                      type="submit"
-                      className="px-4 py-2.5 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal"
-                    >
-                      Search
-                    </button>
-                  </div>
-                  
-                  {/* 右侧：克隆AI按钮 */}
-                  <button
-                    type="button"
-                    className="px-4 py-2.5 bg-[#2a2a2a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2 ml-3"
-                  >
-                    <span className="w-4 h-4">
-                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="currentColor"/>
-                      </svg>
-                    </span>
-                    <span>Clone AI</span>
-                  </button>
-                </div>
-              </Form>
-              
-              {/* 过滤行 */}
-              <div className="flex justify-between items-start mt-5">
-                {/* 左侧：过滤按钮 */}
-                <div className="flex gap-3 flex-wrap flex-1">
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                  >
-                    <span className="w-4 h-4">
-                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 17h18v2H3v-2zm0-7h18v2H3v-2zm0-7h18v2H3V3z" fill="#7c7c7c"/>
-                      </svg>
-                    </span>
-                    <span>All Filters</span>
-                    <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                      <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                    </span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                  >
-                    <span>Job Type</span>
-                    <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                      <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                    </span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                  >
-                    <span>Contract Type</span>
-                    <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                      <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                    </span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                  >
-                    <span>Salary Range</span>
-                    <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                      <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                    </span>
-                  </button>
-                  
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-[#1a1a1a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                  >
-                    <span>Published Date</span>
-                    <span className="relative inline-block w-2.5 h-2.5 ml-1">
-                      <span className="absolute top-0 left-0 w-1.5 h-1.5 border-b border-r border-[#7c7c7c] transform rotate-45"></span>
-                    </span>
-                  </button>
-                </div>
-                
-                {/* 右侧：创建AI劳动力按钮 */}
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-[#2a2a2a] border border-[#2c2c2c] rounded-full text-white font-normal flex items-center gap-2"
-                >
-                  <span className="w-4 h-4">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zM7.83 14c.37 0 .67.26.74.62.41 2.22 2.28 2.98 3.64 2.87.43-.03.83.33.83.75 0 .4-.32.73-.72.75-2.13.13-4.62-1.09-5.19-4.12a.75.75 0 01.7-.87z" fill="#7c7c7c"/>
-                    </svg>
-                  </span>
-                  <span>Create AI Workforce</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          
           {/* 内容区域 */}
           <div>
-            <h4 className="text-sm font-normal text-white ml-6 mb-4">
-              Search Results
-            </h4>
-            
             {isLoading ? (
-              // 加载状态显示
-              <div className="flex justify-center items-center h-[300px] flex-col">
-                <div className="w-10 h-10 rounded-full border-3 border-[rgba(255,255,255,0.2)] border-t-white animate-spin mb-4"></div>
-                <div className="text-[#7c7c7c] text-sm">
-                  Loading employee data...
-                </div>
-                <style>{`
-                  @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                  }
-                `}</style>
-              </div>
+              <Loading />
             ) : searchQuery ? (
               <div>
                 {employees.length > 0 ? (
@@ -968,8 +827,18 @@ export default function Hiring() {
             ) : (
               <div>
                 <div className="flex flex-col space-y-4 w-full">
-                  {employees.map(employee => (
-                    <EmployeeCard key={employee.id} employee={employee} onHire={handleHire} />
+                  {convertEmployeesToTeam(employees).map(team => (
+                    <TeamCard 
+                      key={team.id} 
+                      team={team} 
+                      onHire={(team) => {
+                        // 找到团队对应的第一个员工并雇佣
+                        const employeeToHire = employees.find(emp => emp.id === team.id);
+                        if (employeeToHire) {
+                          handleHire(employeeToHire);
+                        }
+                      }}
+                    />
                   ))}
                 </div>
               </div>
