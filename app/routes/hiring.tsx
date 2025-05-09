@@ -1062,7 +1062,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 所有过滤器下拉动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <SliderIcon />
                     <span>All filters</span>
@@ -1075,7 +1075,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 工作类型下拉动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <span>Work type</span>
                     <DropdownArrow />
@@ -1087,7 +1087,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 合同类型下拉动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <span>Contract type</span>
                     <DropdownArrow />
@@ -1099,7 +1099,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 财务区间下拉动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <span>Pay range</span>
                     <DropdownArrow />
@@ -1111,7 +1111,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 发布于下拉动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <span>Posted within</span>
                     <DropdownArrow />

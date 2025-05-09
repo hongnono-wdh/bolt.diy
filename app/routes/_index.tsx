@@ -25,7 +25,7 @@ export default function Index() {
       <Header />
       
       {/* Hiring page navigation button - fixed position */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* <div className="fixed bottom-6 right-6 z-50">
         <Link 
           to="/hiring" 
           className="flex items-center gap-2 px-4 py-3 bg-bolt-elements-interactive-primary hover:bg-bolt-elements-interactive-primary-hover text-bolt-elements-background-depth-1 rounded-md shadow-lg transition-all duration-300 font-medium"
@@ -33,7 +33,7 @@ export default function Index() {
           <span className="i-carbon:user-profile text-xl"></span>
           <span>Hiring Portal</span>
         </Link>
-      </div>
+      </div> */}
       <ClientOnly fallback={<BaseChat />}>{() => <Chat />}</ClientOnly>
     </div>
   );
