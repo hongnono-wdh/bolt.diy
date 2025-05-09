@@ -152,21 +152,34 @@ export class PreviewsStore {
     });
 
     try {
-      // Watch for file changes
-      const watcher = await webcontainer.fs.watch('**/*', { persistent: true });
+      // 确保根目录存在
+      try {
+        await webcontainer.fs.mkdir('/', { recursive: true });
+      } catch (e) {
+        // 如果目录已存在或其他原因无法创建，忽略错误
+        console.log('[Preview] Note: Root directory check', e);
+      }
 
-      // Use the native watch events
-      (watcher as any).addEventListener('change', async () => {
-        const previews = this.previews.get();
-
-        for (const preview of previews) {
-          const previewId = this.getPreviewId(preview.baseUrl);
-
-          if (previewId) {
-            this.broadcastFileChange(previewId);
+      // 使用一个更简单的方式监听文件更改
+      try {
+        const watcher = await webcontainer.fs.watch('.', { persistent: true });
+        
+        // 定义事件处理函数
+        const handler = async () => {
+          const previews = this.previews.get();
+          for (const preview of previews) {
+            const previewId = this.getPreviewId(preview.baseUrl);
+            if (previewId) {
+              this.broadcastFileChange(previewId);
+            }
           }
-        }
-      });
+        };
+        
+        // 使用type断言应用事件监听器
+        (watcher as any).addEventListener?.('change', handler);
+      } catch (watchError) {
+        console.warn('[Preview] File watching setup failed:', watchError);
+      }
 
       // Watch for DOM changes that might affect storage
       if (typeof window !== 'undefined') {
