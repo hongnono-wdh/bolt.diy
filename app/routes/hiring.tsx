@@ -1002,7 +1002,7 @@ export default function Hiring() {
                       onClick={() => {
                         // 过滤动作
                       }}
-                      className="bg-[#2a2a2a] border border-[#2c2c2c] border-l-0 px-4 h-[40px] text-white text-[14px] rounded-r-full font-normal flex items-center justify-center gap-2 box-border"
+                      className="bg-[#1a1a1a] border border-[#2c2c2c] border-l-0 px-4 h-[40px] text-white text-[14px] rounded-r-full font-normal flex items-center justify-center gap-2 box-border"
                     >
                       <span>All Categories</span>
                       <DropdownArrow />
@@ -1015,7 +1015,7 @@ export default function Hiring() {
                     onClick={() => {
                       // 位置过滤动作
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 h-[40px] text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2 box-border"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 h-[40px] text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2 box-border"
                   >
                     <LocationIcon />
                     <span>All Locations</span>
@@ -1033,7 +1033,7 @@ export default function Hiring() {
                       }
                       setSearchParams(newParams);
                     }}
-                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                    className="bg-[#1a1a1a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
                   >
                     <span>Search</span>
                   </button>

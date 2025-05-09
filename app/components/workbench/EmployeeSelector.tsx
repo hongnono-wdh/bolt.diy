@@ -122,11 +122,11 @@ export function RoleButtonSelector() {
               `}
             >
               <div className="flex items-center m-1">
-                {/* 渲染头像 */}
+                {/* Render avatar */}
                 <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0">
                   <img 
                     src={`/assets/images/avatar/${avatarIndex}.png`} 
-                    alt={`${role.name}的头像`} 
+                    alt={`${role.name}'s avatar`} 
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -136,9 +136,9 @@ export function RoleButtonSelector() {
                     {isActive ? (
                       <span className="flex items-center text-[#39e58c]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#39e58c] mr-1.5 animate-pulse"></span>
-                        已选择
+                        Selected
                       </span>
-                    ) : '团队成员'}
+                    ) : 'Team Member'}
                   </div>
                 </div>
               </div>
