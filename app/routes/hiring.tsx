@@ -501,14 +501,16 @@ function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }
   };
 
   // 生成团队成员头像
-  const renderTeamMemberAvatar = (member: TeamMember) => {
+  const renderTeamMemberAvatar = (member: TeamMember, index: number) => {
+    // 使用成员索引来选择不同的头像图片，确保在0-249范围内
+    const avatarIndex = index % 250;
     return (
       <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0">
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-700">
-          <div className="text-white text-lg font-bold">
-            {member.name ? member.name.charAt(0).toUpperCase() : 'U'}
-          </div>
-        </div>
+        <img 
+          src={`/assets/images/avatar/${avatarIndex}.png`} 
+          alt={`${member.name}的头像`} 
+          className="w-full h-full object-cover"
+        />
       </div>
     );
   };
@@ -521,36 +523,36 @@ function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }
   );
 
   return (
-    <div className="bg-[#1a1a1a] rounded-[20px] shadow-lg mb-5 relative overflow-hidden">
+    <div className="bg-[#1a1a1a] rounded-[20px] shadow-lg  relative overflow-hidden">
       {/* 团队指示器 (右上角) */}
       <div className="absolute top-[15px] right-[15px] z-10">
-        <div className="px-2 py-1 rounded-full bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] flex items-center">
+        <div className="px-4 py-2 rounded-full bg-[rgba(255,255,255,0.1)]  flex items-center">
           <TeamIcon />
           <span className="text-xs text-white ml-1">Team</span>
         </div>
       </div>
 
       {/* 团队名称和基本信息 */}
-      <div className="px-4 pt-4 pb-2">
+      <div className="px-6 pt-4 pb-2">
         <h2 className="text-white text-lg font-bold mb-1">{team.name}</h2>
       
       </div>
 
       {/* 水平滚动区域 - 成员卡片 (上方显示) */}
-      <div className="px-4 pb-3 pt-2 border-t border-[#2c2c2c]">
-        <h3 className="text-white text-sm font-medium mb-3 flex items-center">
+      <div className="px-6 pb-1 pt-2">
+        {/* <h3 className="text-white text-sm font-medium mb-3 flex items-center">
           <span>Team Members ({team.members.length})</span>
-        </h3>
+        </h3> */}
         <div className="overflow-x-auto hide-scrollbar">
           <div className="flex space-x-4 min-w-max pb-2"> {/* 水平排列的成员卡片区 */}
             {team.members.map((member, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 bg-[#252525] rounded-lg p-3 cursor-pointer hover:bg-[#303030] transition-colors w-[180px]"
+                className="flex-shrink-0 bg-[#252525] rounded-lg p-3 cursor-pointer hover:bg-[#303030] transition-colors w-[220px]"
                 onClick={() => alert(`Selected team member: ${member.name}`)}
               >
-                <div className="flex items-center mb-2">
-                  {renderTeamMemberAvatar(member)}
+                <div className="flex items-center m-2">
+                  {renderTeamMemberAvatar(member, index)}
                   <div className="ml-3 flex-1 min-w-0">
                     <div className="text-white font-medium text-sm truncate">{member.name}</div>
                     <div className="text-[#888] text-xs truncate">{member.position}</div>
@@ -563,7 +565,7 @@ function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }
       </div>
 
       {/* 团队简介 (下方显示) */}
-      <div className="px-4 py-3 border-t border-[#2c2c2c]">
+      <div className="px-6 py-3 ">
         <h3 className="text-white text-sm font-medium mb-1 flex items-center">
           <TeamIcon />
           <span className="ml-2">Team Overview</span>
@@ -572,19 +574,20 @@ function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }
       </div>
 
       {/* 下部悬浮操作区域 */}
-      <div className="flex justify-between items-center px-4 py-3 bg-[#252525] border-t border-[#2c2c2c]">
+      <div className="flex justify-between items-center px-4 py-3 bg-[#262626]">
         <div className="text-[#7c7c7c] flex items-center text-xs">
           <SavingIcon />
-          <span className="ml-2">{team.hiringPrice} credits/hr</span>
+          <span className="ml-2">free</span>
         </div>
 
         <button
           onClick={() => handleHireWithLoading(team)}
           disabled={isLoading}
           className="
-            px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-full 
+            px-6 py-2 bg-white hover:bg-gray-100 text-[#333333] text-[14px] rounded-full 
             flex items-center justify-center transition-all 
-            disabled:bg-gray-600 disabled:cursor-not-allowed
+            disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed
+            font-bold
           "
         >
           {isLoading ? (
@@ -629,7 +632,7 @@ function GlobalStyles() {
 
 // 将Employee转换为Team的工具函数
 function convertEmployeesToTeam(employees: Employee[]): Team[] {
-  // 将员工分组成团队，每10个员工一组
+  // 将员工分组成团队，每3-5个员工一组以创建更多团队
   const teams: Team[] = [];
   
   // 团队名称列表
@@ -637,23 +640,100 @@ function convertEmployeesToTeam(employees: Employee[]): Team[] {
     'Alpha Team', 'Beta Team', 'Omega Squad', 'Phoenix Group', 
     'Quantum Tech', 'Titan Collective', 'Horizon Innovators', 'Apex Solutions',
     'Nebula Developers', 'Fusion Alliance', 'Zenith Creators', 'Pulse Team',
-    'Vertex Engineers', 'Pinnacle Experts', 'Catalyst Group', 'Echo Team'
+    'Vertex Engineers', 'Pinnacle Experts', 'Catalyst Group', 'Echo Team',
+    'Gamma Force', 'Delta Squad', 'Sigma Innovations', 'Lambda Engineering',
+    'Maxima Group', 'Epsilon Experts', 'Theta Elite', 'Rho Technologies'
   ];
   
-  // 每10个员工分组
-  for (let i = 0; i < employees.length; i += 10) {
-    // 取出当前团队成员（最多10个）
-    const teamEmployees = employees.slice(i, i + 10);
+  // 创建固定团队 - 直接从员工池中选择特定成员组合
+  const createFixedTeams = () => {
+    // 团队1: 开发团队 - 选择所有前端和后端开发人员
+    const devTeam = employees.filter(emp => 
+      emp.position.toLowerCase().includes('developer') || 
+      emp.position.toLowerCase().includes('engineer')
+    ).slice(0, 5);
     
-    // 如果团队成员少于3个，跳过不创建团队
-    if (teamEmployees.length < 3) continue;
+    if (devTeam.length >= 3) {
+      teams.push(createTeam(devTeam, 'Elite Dev Team', 'R&D'));
+    }
     
+    // 团队2: 设计团队 - 选择所有设计相关人员
+    const designTeam = employees.filter(emp => 
+      emp.position.toLowerCase().includes('design') || 
+      emp.position.toLowerCase().includes('ui') || 
+      emp.position.toLowerCase().includes('ux')
+    ).slice(0, 5);
+    
+    if (designTeam.length >= 3) {
+      teams.push(createTeam(designTeam, 'Creative Studio', 'Design'));
+    }
+    
+    // 团队3: 数据团队 - 选择数据相关人员
+    const dataTeam = employees.filter(emp => 
+      emp.position.toLowerCase().includes('data') || 
+      emp.position.toLowerCase().includes('analyst') || 
+      emp.position.toLowerCase().includes('machine')
+    ).slice(0, 5);
+    
+    if (dataTeam.length >= 3) {
+      teams.push(createTeam(dataTeam, 'Data Insights', 'Analytics'));
+    }
+    
+    // 团队4: 全栈团队 - 选择前端、后端和产品经理
+    const fullStackTeam = [
+      ...employees.filter(emp => emp.position.toLowerCase().includes('frontend')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('backend')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('product')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('qa')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('devops')).slice(0, 1)
+    ];
+    
+    if (fullStackTeam.length >= 3) {
+      teams.push(createTeam(fullStackTeam, 'Full-Stack Squad', 'Cross-Functional'));
+    }
+  };
+  
+  // 创建团队对象的帮助函数
+  const createTeam = (teamEmployees: Employee[], teamNamePrefix: string, departmentType: string) => {
     // 创建团队成员数组
     const members: TeamMember[] = teamEmployees.map(emp => ({
       name: emp.name,
       position: emp.position,
       avatar: emp.avatar
     }));
+    
+    // 生成团队描述
+    let keyPositions = teamEmployees.slice(0, 3).map(e => e.position).join(', ');
+    if (teamEmployees.length > 3) {
+      keyPositions += `, and ${teamEmployees.length - 3} more positions`;
+    }
+    
+    const description = `A specialized ${departmentType} team with expertise in ${keyPositions}. This team excels in delivering high-quality solutions through collaborative efforts and innovative approaches.`;
+    
+    return {
+      id: teamEmployees[0].id,
+      name: `${teamNamePrefix}`,
+      members,
+      description,
+      hiringPrice: Math.round(teamEmployees.reduce((sum, emp) => sum + emp.hiringPrice, 0) / teamEmployees.length),
+      originalId: teamEmployees[0].originalId
+    };
+  };
+  
+  // 首先创建固定团队
+  createFixedTeams();
+  
+  // 然后将其余员工分组
+  // 每4个员工分组
+  const usedEmployeeIds = new Set(teams.flatMap(team => team.members.map(m => m.name)));
+  const remainingEmployees = employees.filter(emp => !usedEmployeeIds.has(emp.name));
+  
+  for (let i = 0; i < remainingEmployees.length; i += 4) {
+    // 取出当前团队成员（最多4个）
+    const teamEmployees = remainingEmployees.slice(i, i + 4);
+    
+    // 如果团队成员少于3个，跳过不创建团队
+    if (teamEmployees.length < 3) continue;
     
     // 使用主要部门作为团队类型
     const departments = teamEmployees.map(emp => emp.department);
@@ -673,29 +753,99 @@ function convertEmployeesToTeam(employees: Employee[]): Team[] {
     }
     
     // 生成团队名字
-    const teamNameIndex = Math.min(Math.floor(i / 10), teamNames.length - 1);
+    const teamNameIndex = Math.min(Math.floor(i / 4) + teams.length, teamNames.length - 1);
     const teamName = `${teamNames[teamNameIndex]} (${mainDepartment})`;
     
-    // 生成团队描述
-    let keyPositions = teamEmployees.slice(0, 3).map(e => e.position).join(', ');
-    if (teamEmployees.length > 3) {
-      keyPositions += `, and ${teamEmployees.length - 3} more positions`;
+    teams.push(createTeam(teamEmployees, teamName, mainDepartment));
+  }
+  
+  // 对团队进行混合和拆分，生成更多团队
+  // 切分大型团队成小型团队
+  const splitTeams = () => {
+    const teamsToSplit = teams.filter(team => team.members.length >= 5);
+    
+    for (const team of teamsToSplit) {
+      // 将团队成员划分为两组
+      if (team.members.length >= 5) {
+        const originalEmployees = employees.filter(emp => 
+          team.members.some(member => member.name === emp.name));
+        
+        const firstHalf = originalEmployees.slice(0, Math.ceil(originalEmployees.length / 2));
+        const secondHalf = originalEmployees.slice(Math.ceil(originalEmployees.length / 2));
+        
+        if (firstHalf.length >= 3 && secondHalf.length >= 3) {
+          // 从原团队中移除
+          const teamIndex = teams.findIndex(t => t.name === team.name);
+          if (teamIndex !== -1) {
+            teams.splice(teamIndex, 1);
+          }
+          
+          // 创建两支新团队
+          const department = team.name.slice(team.name.indexOf('(') + 1, team.name.indexOf(')'));
+          const baseTeamName = team.name.slice(0, team.name.indexOf('(') - 1);
+          
+          teams.push(createTeam(
+            firstHalf, 
+            `${baseTeamName} Alpha (${department})`, 
+            department
+          ));
+          
+          teams.push(createTeam(
+            secondHalf, 
+            `${baseTeamName} Omega (${department})`, 
+            department
+          ));
+        }
+      }
+    }
+  };
+  
+  // 执行团队拆分
+  splitTeams();
+  
+  // 根据特殊角色创建额外团队
+  const createSpecialTeams = () => {
+    // 创建一个顶级专家团队，选择不同部门的高级人才
+    const expertTeam = [
+      ...employees.filter(emp => emp.position.toLowerCase().includes('architect')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('security')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('machine learning')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('senior')).slice(0, 1)
+    ];
+    
+    if (expertTeam.length >= 3) {
+      teams.push(createTeam(expertTeam, 'Elite Experts (Consulting)', 'Consulting'));
     }
     
-    const description = `A collaborative team of professionals with expertise in ${keyPositions}. This team specializes in ${mainDepartment} projects and brings diverse skills to address complex challenges.`;
+    // 创建创新团队
+    const innovationTeam = [
+      ...employees.filter(emp => emp.position.toLowerCase().includes('research')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('design')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('product')).slice(0, 1),
+      ...employees.filter(emp => emp.position.toLowerCase().includes('content')).slice(0, 1)
+    ];
     
-    // 创建团队对象
-    const team: Team = {
-      id: teamEmployees[0].id,
-      name: teamName,
-      members,
-      description,
-      hiringPrice: teamEmployees.reduce((sum, emp) => sum + emp.hiringPrice, 0) / teamEmployees.length, // 平均价格
-      originalId: teamEmployees[0].originalId
-    };
+    if (innovationTeam.length >= 3) {
+      teams.push(createTeam(innovationTeam, 'Innovation Lab (Research)', 'Research'));
+    }
+  };
+  
+  // 创建特殊团队
+  createSpecialTeams();
+  
+  // 多样性处理：对团队进行排序和不同价格处理
+  teams.forEach((team, index) => {
+    // 给不同团队设置不同价格
+    // 让专业团队价格更高
+    if (team.name.includes('Elite') || team.name.includes('Expert')) {
+      team.hiringPrice = Math.round(team.hiringPrice * 1.35); // 专家团队涉及35%溢价
+    } else if (team.name.includes('Innovation') || team.name.includes('Creative')) {
+      team.hiringPrice = Math.round(team.hiringPrice * 1.2); // 创新团队涉及20%溢价
+    }
     
-    teams.push(team);
-  }
+    // 确保所有团队价格都是整数
+    team.hiringPrice = Math.round(team.hiringPrice);
+  });
   
   return teams;
 }
@@ -715,7 +865,7 @@ function SearchResultsList({ employees, onHire }: { employees: Employee[]; onHir
   };
   
   return (
-    <div className="flex flex-col space-y-4">
+    <div className="flex flex-col space-y-10">
       {teams.map((team) => (
         <div key={team.id}>
           <TeamCard key={team.id} team={team} onHire={handleTeamHire} />
@@ -769,6 +919,41 @@ export default function Hiring() {
     }, 1500);
   };
   
+  // 位置图标
+  const LocationIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#7c7c7c"/>
+    </svg>
+  );
+
+  // 机器学习图标
+  const MachineLearningIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zM12 20c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2z" fill="#7c7c7c"/>
+    </svg>
+  );
+
+  // 下拉箭头
+  const DropdownArrow = () => (
+    <span className="relative inline-block w-[10px] h-[10px] ml-[5px]">
+      <span className="absolute top-0 left-0 w-[6px] h-[6px] border-b border-r border-[#7c7c7c] transform rotate-45"></span>
+    </span>
+  );
+
+  // 水平滑块图标
+  const SliderIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 17h18v2H3v-2zm0-7h18v2H3v-2zm0-7h18v2H3V3z" fill="#7c7c7c"/>
+    </svg>
+  );
+
+  // 机器人图标
+  const HumanoidIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2c-4.42 0-8 3.58-8 8 0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 20 10c0-4.42-3.58-8-8-8z" fill="#7c7c7c"/>
+    </svg>
+  );
+
   return (
     <div className="flex flex-col min-h-screen bg-[#0a0a0a]">
       <GlobalStyles />
@@ -777,21 +962,180 @@ export default function Hiring() {
       <main className="flex-grow p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">Employee Hiring</h1>
+            <h1 className="text-2xl  text-white">Team Hiring</h1>
             <div className="flex items-center gap-3">
               {hireMessage && (
                 <div className="px-4 py-2 bg-[#333333] text-white rounded-md transition-all duration-300 flex items-center gap-2">
                   <span>{hireMessage}</span>
                 </div>
               )}
-              <Link to={returnUrl} className="px-4 py-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white rounded-full transition-colors duration-300 flex items-center gap-2 border border-[#2c2c2c]">
+              <Link to={returnUrl} className="px-4 py-2 bg-[#2a2a2a] hover:bg-[#333333] text-white text-[14px] rounded-full transition-colors duration-300 flex items-center gap-2 border border-[#2c2c2c]">
                 <span>Back</span>
               </Link>
             </div>
           </div>
-          
+
+          {/* 搜索区域 */}
+          <div className="mb-10 bg-[#1a1a1a] rounded-[36px] py-4 px-7">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-normal text-white mb-3">Search</h2>
+            </div>
+
+            {/* 搜索表单 */}
+            <div className="mb-2">
+              <div className="flex justify-between items-center">
+                {/* 左侧：搜索输入和过滤器 */}
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center flex-1">
+                    {/* 搜索输入框 */}
+                    <input
+                      type="text"
+                      placeholder="Search job title or keyword"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="flex-1 bg-[#1a1a1a] border border-[#2c2c2c] text-white text-[14px] px-5 h-[40px] rounded-l-full outline-none focus:outline-none box-border w-[400px]"
+                    />
+
+                    {/* 过滤按钮连接到输入框 */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // 过滤动作
+                      }}
+                      className="bg-[#2a2a2a] border border-[#2c2c2c] border-l-0 px-4 h-[40px] text-white text-[14px] rounded-r-full font-normal flex items-center justify-center gap-2 box-border"
+                    >
+                      <span>All Categories</span>
+                      <DropdownArrow />
+                    </button>
+                  </div>
+
+                  {/* 所有位置按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 位置过滤动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 h-[40px] text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2 box-border"
+                  >
+                    <LocationIcon />
+                    <span>All Locations</span>
+                    <DropdownArrow />
+                  </button>
+
+                  {/* 搜索按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 搜索动作
+                      const newParams = new URLSearchParams();
+                      if (searchTerm) {
+                        newParams.set('q', searchTerm);
+                      }
+                      setSearchParams(newParams);
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <span>Search</span>
+                  </button>
+                </div>
+
+                {/* 右侧：Clone AI按钮 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Clone AI按钮动作
+                  }}
+                  className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 h-[40px] text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2 ml-3"
+                >
+                  <MachineLearningIcon />
+                  <span>Clone AI</span>
+                </button>
+              </div>
+
+              {/* 过滤行与AI劳动力按钮 */}
+              <div className="mt-5 flex justify-between items-start">
+                {/* 左侧：过滤按钮 */}
+                <div className="flex gap-3 flex-wrap flex-1">
+                  {/* 所有过滤器按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 所有过滤器下拉动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <SliderIcon />
+                    <span>All filters</span>
+                    <DropdownArrow />
+                  </button>
+
+                  {/* 工作类型按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 工作类型下拉动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <span>Work type</span>
+                    <DropdownArrow />
+                  </button>
+
+                  {/* 合同类型按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 合同类型下拉动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <span>Contract type</span>
+                    <DropdownArrow />
+                  </button>
+
+                  {/* 财务区间按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 财务区间下拉动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <span>Pay range</span>
+                    <DropdownArrow />
+                  </button>
+
+                  {/* 发布于按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // 发布于下拉动作
+                    }}
+                    className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2"
+                  >
+                    <span>Posted within</span>
+                    <DropdownArrow />
+                  </button>
+                </div>
+
+                {/* 右侧：创建AI劳动力按钮 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    // 创建AI劳动力按钮动作
+                  }}
+                  className="bg-[#2a2a2a] border border-[#2c2c2c] px-4 py-2 text-white text-[14px] rounded-full font-normal flex items-center justify-center gap-2 h-[40px]"
+                >
+                  <HumanoidIcon />
+                  <span>Creating an AI Workforce</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {/* 内容区域 */}
           <div>
+            <h4 className="text-sm font-normal text-white mb-4 ml-6">Search Results</h4>
             {isLoading ? (
               <Loading />
             ) : searchQuery ? (
@@ -809,7 +1153,7 @@ export default function Hiring() {
                             newParams.set('q', term);
                             setSearchParams(newParams);
                           }}
-                          className="px-2 py-1 text-xs rounded-full bg-[#2a2a2a] text-[#cccccc] hover:bg-[#333333] cursor-pointer"
+                          className="px-2 py-1 text-[14px] rounded-full bg-[#2a2a2a] text-[#cccccc] hover:bg-[#333333] cursor-pointer"
                         >
                           {term}
                         </button>
@@ -826,7 +1170,7 @@ export default function Hiring() {
               </div>
             ) : (
               <div>
-                <div className="flex flex-col space-y-4 w-full">
+                <div className="flex flex-col space-y-10 w-full">
                   {convertEmployeesToTeam(employees).map(team => (
                     <TeamCard 
                       key={team.id} 
