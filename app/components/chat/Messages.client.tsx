@@ -1,4 +1,5 @@
 import type { Message } from 'ai';
+import type { EnhancedMessage } from '~/types/message';
 import { Fragment } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
@@ -17,7 +18,7 @@ interface MessagesProps {
   id?: string;
   className?: string;
   isStreaming?: boolean;
-  messages?: Message[];
+  messages?: EnhancedMessage[];
 }
 
 export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
@@ -57,7 +58,11 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
               const isHidden = annotations?.includes('hidden');
 
 
-              console.log("内部消息组件message", message);
+              // console.log("内部消息组件message", message);
+              // // 打印角色信息
+              // if ((message as EnhancedMessage).roleInfo) {
+              //   console.log("消息角色信息:", (message as EnhancedMessage).roleInfo);
+              // }
 
               if (isHidden) {
                 return <Fragment key={index} />;
@@ -89,6 +94,18 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                     </div>
                   )}
                   <div className="grid grid-col-1 w-full">
+                    {/* AI消息显示角色信息 */}
+                    {!isUserMessage && message.roleInfo && (
+                      <div className="flex items-center mb-3">
+                        <WithTooltip tooltip={`角色描述: ${message.roleInfo.roleDescription || ''}`}>
+                          <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
+                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                            {message.roleInfo.roleName}
+                          </div>
+                        </WithTooltip>
+                        <div className="ml-2 text-xs text-bolt-elements-textTertiary">正在以该角色回复</div>
+                      </div>
+                    )}
                     {isUserMessage ? (
                       <UserMessage content={content} />
                     ) : (

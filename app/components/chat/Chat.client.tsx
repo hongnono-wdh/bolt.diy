@@ -29,6 +29,7 @@
 import { useStore } from '@nanostores/react';
 import type { Message } from 'ai';
 import { useChat } from 'ai/react';
+import type { EnhancedMessage } from '~/types/message';
 import { useAnimate } from 'framer-motion';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { cssTransition, toast, ToastContainer } from 'react-toastify';
@@ -36,6 +37,7 @@ import { useMessageParser, usePromptEnhancer, useShortcuts, useSnapScroll } from
 import { description, useChatHistory } from '~/lib/persistence';
 import { chatStore } from '~/lib/stores/chat';
 import { roleStore } from '~/lib/stores/role';
+import { getRolePrompt, useRolePromptsStore } from '~/lib/stores/rolePrompts';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { DEFAULT_MODEL, DEFAULT_PROVIDER, PROMPT_COOKIE_KEY, PROVIDER_LIST } from '~/utils/constants';
 import { cubicEasingFn } from '~/utils/easings';
@@ -152,12 +154,21 @@ export const ChatImpl = memo(
 
     // 使用roleStore获取当前角色
     const [currentRole, setCurrentRole] = useState(() => roleStore.get());
+    // 获取当前角色的提示词信息
+    const [currentRolePrompt, setCurrentRolePrompt] = useState(() => {
+      const roleName = roleStore.get();
+      const rolePromptData = useRolePromptsStore.getState().getRolePromptByName(roleName);
+      return rolePromptData;
+    });
 
     // 订阅roleStore的变化和自动发送消息事件
     useEffect(() => {
       // 订阅角色变化
       const unsubscribe = roleStore.subscribe((role) => {
         setCurrentRole(role);
+        // 更新当前角色的提示词信息
+        const rolePromptData = useRolePromptsStore.getState().getRolePromptByName(role);
+        setCurrentRolePrompt(rolePromptData);
       });
       
       // 监听自动发送消息事件
@@ -247,6 +258,10 @@ export const ChatImpl = memo(
             messageLength: message.content.length,
           });
         }
+        
+        // 注意：角色信息已经在流式传输开始时添加，这里不需要重复添加
+        // 但我们仍然需要在这里保存消息历史
+        storeMessageHistory(messages).catch((error) => toast.error(error.message));
 
         logger.debug('Finished streaming');
       },
@@ -284,7 +299,36 @@ export const ChatImpl = memo(
       chatStore.setKey('started', initialMessages.length > 0);
     }, []);
 
+    // 监听消息变化，在流式传输开始时就添加角色信息
     useEffect(() => {
+      // 如果消息列表有变化
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        
+        // 仅处理AI回复消息，无论是否正在流式传输
+        if (lastMessage.role === 'assistant' && !(lastMessage as EnhancedMessage).roleInfo) {
+          // console.log('在流式传输开始时给AI回复添加角色信息');  
+          
+          // 获取当前角色信息
+          const roleInfo = {
+            roleName: currentRole,
+            rolePrompt: currentRolePrompt?.prompt || '',
+            roleDescription: currentRolePrompt?.description
+          };
+          
+          // 为AI回复消息添加角色信息
+          const updatedMessages = [...messages];
+          updatedMessages[messages.length - 1] = {
+            ...lastMessage,
+            roleInfo: roleInfo
+          } as EnhancedMessage;
+          
+          // 更新消息列表
+          setMessages(updatedMessages);
+        }
+      }
+      
+      // 原有的消息处理逻辑
       processSampledMessages({
         messages,
         initialMessages,
@@ -292,7 +336,7 @@ export const ChatImpl = memo(
         parseMessages,
         storeMessageHistory,
       });
-    }, [messages, isLoading, parseMessages]);
+    }, [messages, isLoading, parseMessages, currentRole, currentRolePrompt]);
 
     const scrollTextArea = () => {
       const textarea = textareaRef.current;
@@ -366,6 +410,8 @@ export const ChatImpl = memo(
         abort();
         return;
       }
+      
+      // 不需要在这里获取角色信息，我们将在AI回复时添加角色信息
 
       runAnimation();
 
@@ -451,7 +497,8 @@ export const ChatImpl = memo(
                 image: imageData,
               })),
             ] as any,
-          },
+            // 用户消息不需要添加角色信息
+          } as EnhancedMessage,
         ]);
         reload();
         setFakeLoading(false);
@@ -489,7 +536,7 @@ export const ChatImpl = memo(
               type: 'image',
               image: imageData,
             })),
-          ] as any,
+          ] as any
         });
 
         workbenchStore.resetAllFileModifications();
@@ -505,7 +552,7 @@ export const ChatImpl = memo(
               type: 'image',
               image: imageData,
             })),
-          ] as any,
+          ] as any
         });
       }
 
@@ -590,7 +637,7 @@ export const ChatImpl = memo(
         importChat={importChat}
         exportChat={exportChat}
         messages={messages.map((message, i) => {
-          console.log('这个是所有的消息，打印出来看看', message.content);
+          // console.log('这个是所有的消息，打印出来看看', message.content);
 
           if (message.role === 'user') {
             return message;

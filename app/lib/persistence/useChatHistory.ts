@@ -5,6 +5,7 @@ import { generateId, type JSONValue, type Message } from 'ai';
 import { toast } from 'react-toastify';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { logStore } from '~/lib/stores/logs'; // Import logStore
+import type { EnhancedMessage } from '~/types/message';
 import {
   getMessages,
   getNextId,
@@ -25,7 +26,7 @@ export interface ChatHistoryItem {
   id: string;
   urlId?: string;
   description?: string;
-  messages: Message[];
+  messages: EnhancedMessage[]; // 使用扩展的Message类型，可以存储角色和提示词信息
   timestamp: string;
   metadata?: IChatMetadata;
 }
