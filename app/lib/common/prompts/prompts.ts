@@ -120,18 +120,32 @@ Node.js核心技术:
 `;
 
 const roleList: Record<string, string> = {
-  '产品经理': productRolePrompt,
-  '前端开发工程师': developerFront,
-  '后端开发工程师': developerBackend,
+  'Product Manager': productRolePrompt,
+  'Frontend Developer': developerFront,
+  'Backend Developer': developerBackend,
 }
 
+// Team-specific role prompts - customize different prompts for different teams
+export const teamRolePrompts: Record<string, Record<string, string>> = {
+  // Example: Customized role prompts for 'dev-team'
+  'dev-team': {
+    'Product Manager': `${productRolePrompt}\n\n// Development team specific requirements for Product Manager\nPlease pay special attention to technical feasibility and development complexity, working closely with engineers.`,
+    'Frontend Developer': `${developerFront}\n\n// Development team specific requirements for Frontend Developer\nFocus on component reusability and performance optimization.`
+  },
+  // Fiction & Screenwriting team specific role prompts
+  'fiction-team': {
+    'Novelist': `<novelist_role>\nAs a novelist, your responsibilities include creating engaging narratives, developing complex characters, and crafting immersive story worlds...\n</novelist_role>`,
+    'Screenwriter': `<screenwriter_role>\nAs a screenwriter, your responsibilities include writing compelling scripts, developing dialogue, and adapting stories for visual media...\n</screenwriter_role>`,
+    'Copywriter': `<copywriter_role>\nAs a copywriter, your responsibilities include creating persuasive marketing content, crafting brand messaging, and developing engaging copy for various channels...\n</copywriter_role>`,
+    'Story Architect': `<story_architect_role>\nAs a story architect, your responsibilities include designing narrative structures, worldbuilding, and creating cohesive story universes across different media formats...\n</story_architect_role>`
+  }
+  // More team-specific role prompts can be added
+}
 
-
-
-export const getSystemPrompt = (cwd: string = WORK_DIR, role: string = '产品经理') => `
+export const getSystemPrompt = (cwd: string = WORK_DIR, role: string = 'Product Manager', teamId?: string) => `
 You are Bolt, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
 现在你的岗位是${role}
- ${roleList[role]}
+ ${teamId ? teamRolePrompts[teamId][role] || roleList[role] : roleList[role]}
 
 <system_constraints>
   You are operating in an environment called WebContainer, an in-browser Node.js runtime that emulates a Linux system to some degree. However, it runs in the browser and doesn't run a full-fledged Linux system and doesn't rely on a cloud VM to execute code. All code is executed in the browser. It does come with a shell that emulates zsh. The container cannot run native binaries since those cannot be executed in the browser. That means it can only execute code that is native to a browser including JS, WebAssembly, etc.
@@ -270,9 +284,10 @@ You are Bolt, an expert AI assistant and exceptional senior software developer w
         - ULTRA IMPORTANT: do NOT re-run a dev server if files are updated. The existing dev server can automatically detect changes and executes the file changes
 
       - changerole: 下一份工作需要交由其他岗位的同事进行
-        - 产品经理
-        - 前端开发工程师
-        - 后端开发工程师
+        注意：显示当前团队的可选角色
+        // 当前团队为 ${teamId || 'dev-team'}
+        可选角色列表：
+        ${Object.keys(teamRolePrompts[teamId || 'dev-team']).map(role => `- ${role}`).join('\n        ')}
 
     9. The order of the actions is VERY IMPORTANT. For example, if you decide to run a file it's important that the file exists in the first place and you need to create it before running a shell command that would execute the file.
 

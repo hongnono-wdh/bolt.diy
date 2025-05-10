@@ -1,22 +1,125 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createScopedLogger } from '~/utils/logger';
+import { teamRolePrompts } from '~/lib/common/prompts/prompts';
+import { getCurrentTeam } from './teamStore';
 
 const logger = createScopedLogger('RolePromptsStore');
 
-// 角色提示词接口
+// Role prompt interface
 export interface RolePrompt {
   id: number;
-  name: string;        // 角色名称
-  description: string; // 角色描述
-  prompt: string;      // 角色提示词内容
-  createdAt: string;   // 创建时间
-  updatedAt: string;   // 更新时间
+  name: string;        // Role name
+  description: string; // Role description
+  prompt: string;      // Role prompt content
+  createdAt: string;   // Creation time
+  updatedAt: string;   // Update time
 }
 
-// 默认提示词内容（从原来的prompts.ts中获取）
+// Default prompt contents (from original prompts.ts)
 const defaultPrompts: Record<string, string> = {
-  '产品经理': `<product_manager_development_focus>
+  'Novelist': `<fiction_writer_role>
+作为小说家，你的核心职责和专业技能包括：
+
+1、创意构思与故事创作:
+创作引人入胜的故事情节和场景
+塑造有深度、丰满的角色形象
+设计合理且具有吸引力的故事结构
+创造独特的世界观和设定
+灵活运用各种文学手法和叙事技巧
+
+2、文学素养与写作技巧:
+精通中文写作，具备优秀的文笔和表达能力
+掌握不同文学体裁和风格的写作特点
+理解节奏感和张力在叙事中的重要性
+能够进行细腻的环境和心理描写
+
+3、修改与精进:
+进行自我审校和多轮修改
+根据反馈优化故事内容和结构
+保持作品的连贯性和一致性
+
+工作任务：
+请根据用户的需求，提供创意故事构思、情节发展建议、角色设定等创作指导。如需要，可以直接输出小说片段或完整章节。
+</fiction_writer_role>`,
+
+  'Copywriter': `<copywriter_role>
+作为文案写手，你的核心职责和专业技能包括：
+
+1、文案创作与内容营销:
+创作简洁、有力、引人入胜的标题和剪头
+写作可读性强、吸引力高的正文内容
+调整语调和对录，以适应不同的受众和场景
+结合内容营销策略，优化文案内容
+
+2、品牌传播与创意写作:
+深入理解品牌定位和目标受众
+创造与品牌调性一致的文案风格
+开发对品牌有持续价值的原创内容
+根据品牌指南制作一致的消息
+
+3、循证求精与内容优化:
+进行文案内容的A/B测试和数据分析
+基于用户反馈和效果指标不断优化文案
+关注新兴语言趋势和文化现象
+细致地处理语言内容的细节
+
+工作任务：
+根据用户需求提供各类文案创作服务，包括但不限于广告文案、品牌文案、营销文案、产品描述等。除了提供文案创作，还可以为现有文案提供优化建议和修改方案。
+</copywriter_role>`,
+
+  'Screenwriter': `<screenwriter_role>
+作为编剧，你的核心职责和专业技能包括：
+
+1、剧本创作与故事结构:
+写作引人入胜的剧本和对白
+设计三幕结构完整的故事架构
+创造精彩的场景转换和情节安排
+针对不同媒介（电影、电视、网络剧）调整叙事方式
+
+2、角色塑造与对白写作:
+创造鲜明、立体的角色形象
+写作自然、生动的对白
+通过对白和行动展现角色特点
+有效使用内心技巧展现角色内心活动
+
+3、幕后制作协作:
+跟随导演、制片人、演员的反馈进行剧本修改
+了解影视制作流程和技术制约
+适应不同类型剧情的写作要求
+
+工作任务：
+根据用户需求提供剧本创作、故事大纲、角色设计或对白写作等服务。可以生成完整的场景或者席对白，也可以提供剧本改编建议。
+</screenwriter_role>`,
+
+  'Story Architect': `<story_architect_role>
+作为故事架构师，你的核心职责和专业技能包括：
+
+1、故事世界观构建:
+创造丰富、自洽的故事世界和背景设定
+设计独特的规则系统和内在逻辑
+构建深度的历史背景和文化体系
+设计符合世界观的地理环境和社会结构
+
+2、剧情架构与故事规划:
+设计完整的故事框架和总体结构
+规划长篇故事的主线与支线发展
+设计故事的高潮与转折点
+确保情节发展的节奏和张力平衡
+创造富有共鸣的主题与寓意
+
+3、角色体系设计:
+构建立体的角色关系网络
+设计角色成长轨迹与命运交织
+创造互补且平衡的角色配置
+规划角色冲突与和解的结构
+
+工作任务：
+根据用户需求提供故事世界构建、故事结构规划、角色体系设计等服务。可以从宏观角度进行故事架构分析与优化，也可以为大型叙事作品（如系列小说、电视剧、游戏）提供完整的架构方案。
+</story_architect_role>`,
+
+
+  'Product Manager': `<product_manager_development_focus>
 作为产品经理，你在开发交付过程中的核心职责是:
 
 1、开发文档准备与交付:
@@ -58,7 +161,7 @@ const defaultPrompts: Record<string, string> = {
 
 </product_manager_development_focus>`,
 
-  '前端开发工程师': `<frontend_react_developer_role>
+  'Frontend Developer': `<frontend_react_developer_role>
 作为前端React开发工程师，你的核心职责和技能包括：
 
 1、React技术栈掌握:
@@ -94,7 +197,7 @@ const defaultPrompts: Record<string, string> = {
 希望都是前端开发相关
 </frontend_react_developer_role>`,
 
-  '后端开发工程师': `<backend_node_developer_role>
+  'Backend Developer': `<backend_node_developer_role>
 作为后端Node.js开发工程师，你的核心职责和技能包括：
 
 Node.js核心技术:
@@ -109,7 +212,6 @@ Node.js核心技术:
 熟练使用Express等框架
 设计和实现RESTful API
 实现API版本控制和文档(Swagger、OpenAPI)
-
 
 
 工作任务：
@@ -158,15 +260,15 @@ Node.js核心技术:
 // 获取默认角色描述
 function getDefaultDescription(name: string): string {
   switch(name) {
-    case '产品经理': return '负责产品规划和需求定义的角色';
-    case '前端开发工程师': return '负责Web前端界面开发的角色';
-    case '后端开发工程师': return '负责服务器端开发的角色';
+    case 'Product Manager': return 'Strategic planner responsible for product lifecycle management and decision-making';
+    case 'Frontend Developer': return 'Develops user-facing interfaces and interaction logic';
+    case 'Backend Developer': return 'Responsible for data processing, business logic implementation, and system performance';
     // case '律师': return '负责法律相关事务的角色';
-    default: return `${name}角色`;
+    default: return `${name} specialist`;
   }
 }
 
-// 初始化默认角色提示词
+// Initialize default role prompts
 const initialRolePrompts: RolePrompt[] = Object.entries(defaultPrompts).map(([name, prompt], index) => ({
   id: index + 1,
   name,
@@ -176,7 +278,7 @@ const initialRolePrompts: RolePrompt[] = Object.entries(defaultPrompts).map(([na
   updatedAt: new Date().toISOString()
 }));
 
-// 角色提示词存储接口
+// Role prompts storage interface
 interface RolePromptsState {
   rolePrompts: RolePrompt[];
   addRolePrompt: (rolePrompt: Omit<RolePrompt, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -186,22 +288,22 @@ interface RolePromptsState {
   getAllRoleNames: () => string[];
 }
 
-// 创建角色提示词存储
+// Create role prompts storage
 export const useRolePromptsStore = create<RolePromptsState>()(  
   persist(
     (set, get) => ({
       rolePrompts: initialRolePrompts,
       
-      // 添加新角色提示词
+      // Add new role prompt
       addRolePrompt: (rolePrompt) => {
         const { rolePrompts } = get();
         
-        // 检查是否存在相同名称的角色
+        // Check if a role with the same name exists
         const existingIndex = rolePrompts.findIndex(rp => rp.name === rolePrompt.name);
         
         if (existingIndex >= 0) {
-          // 如果存在相同名称的角色，则更新它
-          logger.debug(`角色"${rolePrompt.name}"已存在，进行更新`);
+          // If a role with the same name exists, update it
+          logger.debug(`Role "${rolePrompt.name}" already exists, updating it`);
           
           set({
             rolePrompts: rolePrompts.map((rp, index) => 
@@ -216,8 +318,8 @@ export const useRolePromptsStore = create<RolePromptsState>()(
             )
           });
         } else {
-          // 创建新角色
-          logger.debug(`添加新角色: ${rolePrompt.name}`);
+          // Create new role
+          logger.debug(`Adding new role: ${rolePrompt.name}`);
           
           const newId = rolePrompts.length > 0 
             ? Math.max(...rolePrompts.map(rp => rp.id)) + 1 
@@ -238,14 +340,14 @@ export const useRolePromptsStore = create<RolePromptsState>()(
           });
         }
         
-        // 触发角色列表更新事件
+        // Trigger role list update event
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('roleListUpdate'));
-          logger.debug('触发roleListUpdate事件');
+          logger.debug('Triggered roleListUpdate event');
         }
       },
       
-      // 更新角色提示词
+      // Update role prompt
       updateRolePrompt: (id, updates) => {
         const { rolePrompts } = get();
         
@@ -262,7 +364,7 @@ export const useRolePromptsStore = create<RolePromptsState>()(
         });
       },
       
-      // 删除角色提示词
+      // Delete role prompt
       deleteRolePrompt: (id) => {
         const { rolePrompts } = get();
         
@@ -271,33 +373,53 @@ export const useRolePromptsStore = create<RolePromptsState>()(
         });
       },
       
-      // 根据名称获取角色提示词
+      // Get role prompt by name
       getRolePromptByName: (name) => {
         const { rolePrompts } = get();
         return rolePrompts.find(rp => rp.name === name);
       },
       
-      // 获取所有角色名称
+      // Get all role names
       getAllRoleNames: () => {
         const { rolePrompts } = get();
         return rolePrompts.map(rp => rp.name);
       }
     }),
     {
-      name: 'bolt-role-prompts-storage',  // 本地存储名称
+      name: 'bolt-role-prompts-storage',  // Local storage name
     }
   )
 );
 
-// 获取角色提示词列表
+// Get role prompts list
 export const getRolePromptsList = () => {
   const { rolePrompts } = useRolePromptsStore.getState();
   return rolePrompts;
 };
 
-// 获取指定角色的提示词
+// Get prompt for a specific role
 export const getRolePrompt = (role: string) => {
   const { getRolePromptByName } = useRolePromptsStore.getState();
   const rolePrompt = getRolePromptByName(role);
   return rolePrompt?.prompt || '';
+};
+
+// Get team-specific role prompt
+export const getTeamRolePrompt = (role: string, teamId?: string) => {
+  // First get the base prompt from local storage
+  const basePrompt = getRolePrompt(role);
+  
+  // If no team ID is specified, try to get the current team
+  const effectiveTeamId = teamId || getCurrentTeam()?.id;
+  
+  // If there's a team ID and team-specific prompt exists, use it
+  if (effectiveTeamId && 
+      teamRolePrompts[effectiveTeamId] && 
+      teamRolePrompts[effectiveTeamId][role]) {
+    // Return team-specific prompt
+    return teamRolePrompts[effectiveTeamId][role];
+  }
+  
+  // If no team-specific prompt is found, return the base prompt
+  return basePrompt;
 };

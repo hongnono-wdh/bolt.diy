@@ -4,6 +4,7 @@ import { Header } from '~/components/header/Header';
 import { useState, useEffect } from 'react';
 import { useRolePromptsStore } from '~/lib/stores/rolePrompts';
 import { roleStore } from '~/lib/stores/role';
+import { getTeamsList, setCurrentTeam } from '~/lib/stores/teamStore';
 // import { useTranslation } from 'react-i18next'; // 暂时注释此导入，直到安装相应的包
 
 // 员工类型接口定义
@@ -1143,7 +1144,7 @@ export default function Hiring() {
                 {employees.length > 0 ? (
                   <>
                     <div className="mb-6 flex flex-wrap gap-2">
-                      <span className="text-[#7c7c7c] text-sm">Popular searches:</span>
+                      {/* <span className="text-[#7c7c7c] text-sm">Popular searches:</span> */}
                       {popularSearches.map((term) => (
                         <button 
                           key={term}
@@ -1171,19 +1172,60 @@ export default function Hiring() {
             ) : (
               <div>
                 <div className="flex flex-col space-y-10 w-full">
-                  {convertEmployeesToTeam(employees).map(team => (
-                    <TeamCard 
-                      key={team.id} 
-                      team={team} 
-                      onHire={(team) => {
-                        // 找到团队对应的第一个员工并雇佣
-                        const employeeToHire = employees.find(emp => emp.id === team.id);
-                        if (employeeToHire) {
-                          handleHire(employeeToHire);
-                        }
-                      }}
-                    />
-                  ))}
+                  {/* First display preset teams (from teamStore) */}
+                  <div className="mb-6">
+                    {/* <h5 className="text-white text-md font-medium mb-4">Preset Teams</h5> */}
+                    <div className="flex flex-col space-y-8">
+                      {getTeamsList().map(storeTeam => {
+                        // Create display Team object from teamStore
+                        const displayTeam: Team = {
+                          id: parseInt(storeTeam.id.replace('team-', '')) || Math.floor(Math.random() * 10000),
+                          name: storeTeam.name,
+                          description: storeTeam.description,
+                          hiringPrice: 499, // Default price
+                          members: storeTeam.roles.map((role, index) => ({
+                            name: role,
+                            position: role,
+                            avatar: `/assets/images/avatar/${(index * 37) % 250}.png` // Generate random avatar
+                          }))
+                        };
+                        
+                        return (
+                          <TeamCard 
+                            key={storeTeam.id} 
+                            team={displayTeam}
+                            onHire={(team) => {
+                              // Set current team and navigate back to chat page
+                              setCurrentTeam(storeTeam.id);
+                              // Get return URL, default to home page if not provided
+                              const returnUrl = searchParams.get('returnUrl') || '/';
+                              navigate(returnUrl);
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Then display dynamically generated teams */}
+                  <div className="mt-8">
+                    <h5 className="text-white text-md font-medium mb-4">Recommended Teams</h5>
+                    <div className="flex flex-col space-y-8">
+                      {convertEmployeesToTeam(employees).map(team => (
+                        <TeamCard 
+                          key={team.id} 
+                          team={team} 
+                          onHire={(team) => {
+                            // Find and hire the first employee corresponding to this team
+                            const employeeToHire = employees.find(emp => emp.id === team.id);
+                            if (employeeToHire) {
+                              handleHire(employeeToHire);
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

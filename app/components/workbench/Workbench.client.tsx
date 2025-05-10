@@ -385,7 +385,7 @@ export const Workbench = memo(
                   <div className="ml-auto" />
                   {selectedView === 'code' && (
                     <div className="flex overflow-y-auto">
-                      <PanelHeaderButton
+                      {/* <PanelHeaderButton
                         className="mr-1 text-sm"
                         onClick={() => {
                           workbenchStore.downloadZip();
@@ -393,11 +393,11 @@ export const Workbench = memo(
                       >
                         <div className="i-ph:code" />
                         Download Code
-                      </PanelHeaderButton>
-                      <PanelHeaderButton className="mr-1 text-sm" onClick={handleSyncFiles} disabled={isSyncing}>
+                      </PanelHeaderButton> */}
+                      {/* <PanelHeaderButton className="mr-1 text-sm" onClick={handleSyncFiles} disabled={isSyncing}>
                         {isSyncing ? <div className="i-ph:spinner" /> : <div className="i-ph:cloud-arrow-down" />}
                         {isSyncing ? 'Syncing...' : 'Sync Files'}
-                      </PanelHeaderButton>
+                      </PanelHeaderButton> */}
                       <PanelHeaderButton
                         className="mr-1 text-sm"
                         onClick={() => {

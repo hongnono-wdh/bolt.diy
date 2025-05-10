@@ -3,22 +3,47 @@
  * 
  * 该组件提供一个按钮式界面用于选择当前激活的角色。
  * 点击按钮可以切换当前激活的角色，状态会在全局同步。
+ * 现在集成了团队管理，只显示当前团队可用的角色。
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import { roleStore } from '~/lib/stores/role';
 import { Link } from '@remix-run/react';
 import { getRolePromptsList } from '~/lib/stores/rolePrompts';
+import { getCurrentTeam, getCurrentTeamRoles } from '~/lib/stores/teamStore';
+import { TeamSelector } from './TeamSelector';
 
-// 从rolePrompts存储中获取角色列表
+// 从rolePrompts存储中获取当前团队的角色列表
 const getRoles = () => {
-  return getRolePromptsList().map(role => ({
-    id: role.name,
-    name: role.name.includes('工程师') ? role.name.replace('工程师', '') : role.name,
-    description: role.description,
-    // 基于角色名称设置头像图标
-    avatar: getAvatarForRole(role.name)
-  }));
+  // 获取当前团队的角色ID列表
+  const teamRoles = getCurrentTeamRoles();
+  
+  // 打印调试信息
+  console.log('Current team roles:', teamRoles);
+  console.log('Available role prompts:', getRolePromptsList().map(r => r.name));
+  
+  // 如果当前没有角色列表，直接返回空数组
+  if (!teamRoles || teamRoles.length === 0) {
+    return [];
+  }
+  
+  // 筛选出当前团队包含的角色
+  const availableRoles = getRolePromptsList()
+    .filter(role => teamRoles.some(teamRole => {
+      // 根据角色名称进行匹配，支持中英文匹配
+      return teamRole === role.name 
+    }))
+    .map(role => ({
+      id: role.name,
+      // 如果角色名称包含“工程师”，就移除这部分
+      name: role.name.includes('工程师') ? role.name.replace('工程师', '') : role.name,
+      description: role.description,
+      // 基于角色名称设置头像图标
+      avatar: getAvatarForRole(role.name)
+    }));
+    
+  console.log('Filtered available roles:', availableRoles);
+  return availableRoles;
 };
 
 // 根据角色名称获取适合的图标
@@ -48,19 +73,25 @@ export function RoleButtonSelector() {
     return unsubscribe;
   }, []);
   
-  // 监听角色列表变化
+  // 监听角色列表和团队变化
   useEffect(() => {
     const handleRoleListUpdate = () => {
+      console.log("查看角色列表",getRoles())
+      
       // 角色列表更新时重新获取
       setRoles(getRoles());
     };
     
     // 添加事件监听
     window.addEventListener('roleListUpdate', handleRoleListUpdate);
+    window.addEventListener('teamChange', handleRoleListUpdate);
+    window.addEventListener('teamListUpdate', handleRoleListUpdate);
     
     // 组件卸载时移除事件监听
     return () => {
       window.removeEventListener('roleListUpdate', handleRoleListUpdate);
+      window.removeEventListener('teamChange', handleRoleListUpdate);
+      window.removeEventListener('teamListUpdate', handleRoleListUpdate);
     };
   }, []);
 
@@ -74,8 +105,14 @@ export function RoleButtonSelector() {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
   
   return (
-    <div className="p-3 mb-4 bg-bolt-elements-background-depth-2 rounded-lg  shadow-md employee-selector">
-      <div className="text-sm font-medium text-bolt-elements-textPrimary mb-2 border-none">Team</div>
+    <div className="p-3 mb-4 bg-bolt-elements-background-depth-2 rounded-lg shadow-md employee-selector">
+      {/* 团队选择器 */}
+      <div className="mb-3">
+        <TeamSelector />
+      </div>
+      
+      {/* 角色列表标题 */}
+      <div className="text-sm font-medium text-bolt-elements-textPrimary mb-2 border-none">Role List</div>
       {/* 滚动条样式 - 使用父级类名约束 */}
       <style>
         {`
