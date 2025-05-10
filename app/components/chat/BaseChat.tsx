@@ -27,6 +27,7 @@ import { ModelSelector } from '~/components/chat/ModelSelector';
 import { SpeechRecognitionButton } from '~/components/chat/SpeechRecognition';
 import { RoleSelector } from '~/components/chat/RoleSelector';
 import type { ProviderInfo } from '~/types/model';
+import { RoleButtonSelector } from '~/components/workbench/EmployeeSelector';
 import { ScreenshotStateManager } from './ScreenshotStateManager';
 import { toast } from 'react-toastify';
 import StarterTemplates from './StarterTemplates';
@@ -326,12 +327,21 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 </p>
               </div>
             )}
+
+                      {/* 聊天开始后显示角色选择器 */}
+              {!chatStarted && (
+                <div className="mb-4 -mt-2 mx-auto w-full max-w-chat">
+                  <RoleButtonSelector />
+                </div>
+              )}
+              
             <div
-              className={classNames('pt-6 px-2 sm:px-6', {
+              className={classNames('pt-0 px-2 sm:px-6', {
                 'h-full flex flex-col': chatStarted,
               })}
               ref={scrollRef}
             >
+    
               <ClientOnly>
                 {() => {
                   return chatStarted ? (
