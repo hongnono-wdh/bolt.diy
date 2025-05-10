@@ -361,7 +361,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     />
                   )}
                 </div>
-                {progressAnnotations && <ProgressCompilation data={progressAnnotations} />}
+                {/* {progressAnnotations && <ProgressCompilation data={progressAnnotations} />} */}
                 <div
                   className={classNames(
                     'bg-bolt-elements-background-depth-2 p-3 border border-[#2C2C2C] rounded-28px relative w-full max-w-chat mx-auto z-prompt',
@@ -576,7 +576,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                                 disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed
                                 font-medium
                               `}
-                              disabled={!providerList || providerList.length === 0 || (!input.length && !uploadedFiles.length)}
+                              disabled={isStreaming ? false : (!providerList || providerList.length === 0 || (!input.length && !uploadedFiles.length))}
                               onClick={(event) => {
                                 if (isStreaming) {
                                   handleStop?.();

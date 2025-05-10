@@ -35,7 +35,7 @@ const productRolePrompt = `<product_manager_development_focus>
 
 
 工作任务：
-不需要输出代码文件，例如
+如果需要求是让你实现，请注意你是产品经理，不要具体实现代码，你只需要设计方案，不需要输出代码文件或其他项目结构文件，例如
 <boltAction type="file" filePath="src/App.jsx">...</boltAction>
 只需要输出产品文档，以及其他开发需要知道的信息到markdown文件中
 <boltAction type="file" filePath="readme.md">...</boltAction>
