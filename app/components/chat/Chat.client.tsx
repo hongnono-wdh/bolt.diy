@@ -1,13 +1,13 @@
 /**
  * Chat.client.tsx
- * 
+ *
  * 聊天组件实现文件
  * -------------------
- * 
+ *
  * 功能概述：
  * 该组件实现了一个完整的聊天界面，支持AI对话交互、消息历史记录管理、
  * 文件上传、消息解析、滚动管理及模型提供商切换等功能。
- * 
+ *
  * 主要功能：
  * - 支持与AI模型的实时对话交互
  * - 消息历史记录的保存、导入和导出
@@ -16,7 +16,7 @@
  * - 多种AI模型和提供商的切换功能
  * - 消息解析和格式化显示
  * - 提供消息通知和错误处理
- * 
+ *
  * 组件结构：
  * - Chat: 主要组件，负责初始化和提供消息历史功能
  * - ChatImpl: 实现具体聊天功能的内部组件
@@ -143,6 +143,9 @@ export const ChatImpl = memo(
     useShortcuts();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    
+    // 使用 useRef 跟踪 chatStarted 的最新值，解决闭包陷阱问题
+    const chatStartedRef = useRef<boolean>(initialMessages.length > 0);
     const [chatStarted, setChatStarted] = useState(initialMessages.length > 0);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [imageDataList, setImageDataList] = useState<string[]>([]);
@@ -152,6 +155,13 @@ export const ChatImpl = memo(
     const actionAlert = useStore(workbenchStore.alert);
     const { activeProviders, promptId, autoSelectTemplate, contextOptimizationEnabled } = useSettings();
 
+    // 更新chatStarted的函数，同时更新state和ref（移到组件级别）
+    const updateChatStarted = (value: boolean) => {
+      chatStartedRef.current = value;
+      setChatStarted(value);
+      chatStore.setKey('started', value);
+    };
+    
     // 使用roleStore获取当前角色
     const [currentRole, setCurrentRole] = useState(() => roleStore.get());
     // 获取当前角色的提示词信息
@@ -170,29 +180,66 @@ export const ChatImpl = memo(
         const rolePromptData = useRolePromptsStore.getState().getRolePromptByName(role);
         setCurrentRolePrompt(rolePromptData);
       });
+
+      // 使用组件级别的updateChatStarted函数
       
       // 监听自动发送消息事件
       const handleAutoSendMessage = (event: CustomEvent) => {
         const { message } = event.detail;
-        console.log('自动发送消息:', message);
+
+        console.log('自动发送消息:', chatStartedRef.current);
         if (message) {
-          // 使用空事件对象和消息内容调用sendMessage
+          // 确保chatStarted为true
+          if (!chatStartedRef.current) {
+            console.log('通过ref设置chatStarted为true');
+            updateChatStarted(true);
+          }
+          
+          // 直接调用sendMessage，不需要setTimeout
+          console.log('自动发送消息，使用ref值:', chatStartedRef.current);
           sendMessage({} as React.UIEvent, message);
         }
       };
-      
+
       window.addEventListener('autoSendMessage', handleAutoSendMessage as EventListener);
-      
+
       return () => {
         unsubscribe(); // 取消角色订阅
         window.removeEventListener('autoSendMessage', handleAutoSendMessage as EventListener);
       };
     }, []);
-    
+
     // 记录角色变化
     useEffect(() => {
       console.log('当前角色已更新为:', currentRole);
     }, [currentRole]);
+    
+    // 监听 chatStarted 的变化
+    useEffect(() => {
+      console.log('=== chatStarted 状态变更 ===');
+      console.log('chatStarted 当前值:', chatStarted);
+      console.log('chatStartedRef 当前值:', chatStartedRef.current);
+      console.log('变更时间:', new Date().toISOString());
+      
+      // 确保ref和state保持同步
+      chatStartedRef.current = chatStarted;
+      
+      // 获取调用栈信息
+      try {
+        throw new Error('获取调用栈');
+      } catch (e: any) { // 显式指定类型为 any
+        console.log('调用栈:', e.stack);
+      }
+      
+      // 记录组件中的相关状态
+      console.log('相关状态:', {
+        messages: messages.length,
+        isLoading,
+        fakeLoading,
+        autoSelectTemplate
+      });
+      console.log('========================');
+    }, [chatStarted]);
 
     const [model, setModel] = useState(() => {
       const savedModel = Cookies.get('selectedModel');
@@ -258,7 +305,8 @@ export const ChatImpl = memo(
             messageLength: message.content.length,
           });
         }
-        
+
+        console.log('数据存储调试1-查看数据存储的数据', messages);
         // 注意：角色信息已经在流式传输开始时添加，这里不需要重复添加
         // 但我们仍然需要在这里保存消息历史
         storeMessageHistory(messages).catch((error) => toast.error(error.message));
@@ -269,7 +317,7 @@ export const ChatImpl = memo(
       initialInput: Cookies.get(PROMPT_COOKIE_KEY) || '',
     });
 
-    // 
+    //
     useEffect(() => {
       const prompt = searchParams.get('prompt');
 
@@ -304,30 +352,30 @@ export const ChatImpl = memo(
       // 如果消息列表有变化
       if (messages.length > 0) {
         const lastMessage = messages[messages.length - 1];
-        
+
         // 仅处理AI回复消息，无论是否正在流式传输
         if (lastMessage.role === 'assistant' && !(lastMessage as EnhancedMessage).roleInfo) {
-          // console.log('在流式传输开始时给AI回复添加角色信息');  
-          
+          // console.log('在流式传输开始时给AI回复添加角色信息');
+
           // 获取当前角色信息
           const roleInfo = {
             roleName: currentRole,
             rolePrompt: currentRolePrompt?.prompt || '',
-            roleDescription: currentRolePrompt?.description
+            roleDescription: currentRolePrompt?.description,
           };
-          
+
           // 为AI回复消息添加角色信息
           const updatedMessages = [...messages];
           updatedMessages[messages.length - 1] = {
             ...lastMessage,
-            roleInfo: roleInfo
+            roleInfo: roleInfo,
           } as EnhancedMessage;
-          
+
           // 更新消息列表
           setMessages(updatedMessages);
         }
       }
-      
+
       // 原有的消息处理逻辑
       processSampledMessages({
         messages,
@@ -373,35 +421,36 @@ export const ChatImpl = memo(
     }, [input, textareaRef]);
 
     const runAnimation = async () => {
-
-
       // 动画已运行
-      console.log("runAnimation1", chatStarted);
-      if (chatStarted) {
+      console.log('runAnimation1', chatStartedRef.current);
+      if (chatStartedRef.current) {
         return;
       }
 
-      
-      console.log("runAnimation2", chatStarted);
+      console.log('runAnimation2', chatStartedRef.current);
       // animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 });
       // animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn });
-      await Promise.all([
-        // animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 }),
-        animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn }),
-      ]);
 
+      // 判断intro元素是否存在 如果存在，就隐藏
+      const introElement = document.querySelector('#intro');
+
+      if (introElement) {
+        await Promise.all([
+          // animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 }),
+          animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn }),
+        ]);
+      }
+
+      console.log('runAnimation3', chatStartedRef.current);
       
-      console.log("runAnimation3", chatStarted);
-      chatStore.setKey('started', true);
-
-      setChatStarted(true);
+      // 使用统一的更新函数
+      updateChatStarted(true);
     };
 
     const sendMessage = async (_event: React.UIEvent, messageInput?: string) => {
       const messageContent = messageInput || input;
 
-
-      console.log("sendMessage", messageContent, chatStarted);
+      console.log('sendMessage', messageContent, chatStartedRef.current);
       if (!messageContent?.trim()) {
         return;
       }
@@ -410,12 +459,17 @@ export const ChatImpl = memo(
         abort();
         return;
       }
-      
+
       // 不需要在这里获取角色信息，我们将在AI回复时添加角色信息
 
+      console.log('数据存储调试3', '查看发送消息的变量', autoSelectTemplate);
       runAnimation();
 
-      if (!chatStarted) {
+
+      //  这里如果判断为还未开始， 就会发生清空聊天记录的情况；
+      // 现在使用ref的值来判断
+
+      if (!chatStartedRef.current) {
         setFakeLoading(true);
 
         if (autoSelectTemplate) {
@@ -536,7 +590,7 @@ export const ChatImpl = memo(
               type: 'image',
               image: imageData,
             })),
-          ] as any
+          ] as any,
         });
 
         workbenchStore.resetAllFileModifications();
@@ -552,7 +606,7 @@ export const ChatImpl = memo(
               type: 'image',
               image: imageData,
             })),
-          ] as any
+          ] as any,
         });
       }
 

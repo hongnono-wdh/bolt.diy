@@ -61,16 +61,59 @@ export const allowedHTMLElements = [
 function remarkThinkRawContent() {
   return (tree: any) => {
     visit(tree, (node: any) => {
+      // console.log("查看内容替换",node.type === 'html' && node.value && node.value.startsWith('<think>'))
+
+      if(node.type === 'html'){
+        console.log("查看内容替换3",node.type === 'html' &&  node.value)
+      }
       if (node.type === 'html' && node.value && node.value.startsWith('<think>')) {
         const cleanedContent = node.value.slice(7);
+
+      // console.log("查看内容替换",cleanedContent)
         node.value = `<div class="__boltThought__">${cleanedContent}`;
 
         return;
       }
 
-      if (node.type === 'html' && node.value && node.value.startsWith('</think>')) {
-        const cleanedContent = node.value.slice(8);
-        node.value = `</div>${cleanedContent}`;
+
+      if(node.type === 'html'){
+        console.log("查看内容替换2",node.type === 'html' &&  node.value)
+      }
+      if (node.type === 'html' && node.value) {
+        // 检测是否是结束标签（考虑可能的换行符）
+        const isEndTag = node.value.startsWith('</think>') || node.value.startsWith('\n</think>');
+        
+        if (isEndTag) {
+          console.log("找到结束标签:", node.value);
+          
+          // 判断是否有换行符前缀
+          const tagLength = node.value.startsWith('\n</think>') ? 9 : 8; // 8 = '</think>'.length
+          
+          // 分离标签后的内容，确保它不被包含在样式中
+          let afterTagContent = '';
+          if (node.value.length > tagLength) {
+            afterTagContent = node.value.slice(tagLength);
+            console.log("标签后的内容:", afterTagContent);
+          }
+          
+          // 如果有后续内容，创建一个新节点
+          if (afterTagContent.trim()) {
+            // 只替换结束标签本身
+            node.value = `</div>`;
+            
+            // 插入一个新节点处理标签后的内容
+            const newNode = { type: 'html', value: afterTagContent };
+            const parent = node.parent;
+            const index = parent.children.indexOf(node);
+            
+            if (index !== -1 && parent.children) {
+              parent.children.splice(index + 1, 0, newNode);
+            }
+          } else {
+            // 没有后续内容，直接关闭 div
+            node.value = `</div>`;
+          }
+        }
       }
     });
   };

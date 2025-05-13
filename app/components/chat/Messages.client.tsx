@@ -103,7 +103,7 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                             {message.roleInfo.roleName}
                           </div>
                         </WithTooltip>
-                        <div className="ml-2 text-xs text-bolt-elements-textTertiary">正在以该角色回复</div>
+                        <div className="ml-2 text-xs text-bolt-elements-textTertiary">Responding as this role</div>
                       </div>
                     )}
                     {isUserMessage ? (
