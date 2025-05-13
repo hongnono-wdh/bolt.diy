@@ -9,17 +9,40 @@ import { Button } from '~/components/ui/Button';
 import { getTeamsList, setCurrentTeam, getCurrentTeam } from '~/lib/stores/teamStore';
 import type { Team } from '~/lib/stores/teamStore';
 
+// 默认已雇佣的团队ID列表（初始只有dev-team和fiction-team）
+// 其他团队需要通过hiring页面雇佣后才会显示
+const DEFAULT_HIRED_TEAMS = ['dev-team', 'fiction-team'];
+
 export function TeamSelector() {
-  // 获取团队列表和当前团队
-  const [teams, setTeams] = useState<Team[]>(() => getTeamsList());
+  // 获取已雇佣团队列表和当前团队
+  const [hiredTeamIds, setHiredTeamIds] = useState<string[]>(() => {
+    // 从localStorage读取已雇佣的团队ID列表，如果没有则使用默认列表
+    const storedTeams = localStorage.getItem('bolt_hired_teams');
+    return storedTeams ? JSON.parse(storedTeams) : DEFAULT_HIRED_TEAMS;
+  });
+  
+  // 过滤出已雇佣的团队列表
+  const [teams, setTeams] = useState<Team[]>(() => {
+    const allTeams = getTeamsList();
+    return allTeams.filter(team => hiredTeamIds.includes(team.id));
+  });
+  
   const [currentTeam, setCurrentTeamState] = useState<Team | undefined>(() => getCurrentTeam());
   const [isOpen, setIsOpen] = useState(false);
   
   // 订阅团队列表变化
   useEffect(() => {
     const handleTeamListUpdate = () => {
-      // 团队列表更新时重新获取
-      setTeams(getTeamsList());
+      // 团队列表更新时重新获取，并过滤已雇佣的团队
+      const allTeams = getTeamsList();
+      
+      // 更新已雇佣团队列表（从localStorage获取最新数据）
+      const storedTeams = localStorage.getItem('bolt_hired_teams');
+      const newHiredTeams = storedTeams ? JSON.parse(storedTeams) : DEFAULT_HIRED_TEAMS;
+      setHiredTeamIds(newHiredTeams);
+      
+      // 过滤显示已雇佣的团队
+      setTeams(allTeams.filter(team => newHiredTeams.includes(team.id)));
       setCurrentTeamState(getCurrentTeam());
     };
     
@@ -78,13 +101,13 @@ export function TeamSelector() {
             </div>
           ))}
           
-          {/* Add new team option */}
+          {/* 添加新团队选项 */}
           <div 
             className="px-4 py-3 hover:bg-bolt-elements-background-depth-2 cursor-pointer border-t border-[#2C2C2C] mt-2 transition-colors duration-150"
             onClick={() => {
-              // Get current path for return
+              // 获取当前路径作为返回URL
               const currentPath = window.location.pathname + window.location.search;
-              // Navigate to team creation page with return URL
+              // 导航到团队雇佣页面
               window.location.href =  '/hiring?returnUrl=' + encodeURIComponent(currentPath);
               setIsOpen(false);
             }}

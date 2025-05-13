@@ -32,6 +32,14 @@ const defaultTeams: Team[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
+  {
+    id: 'solution-team',
+    name: 'Solution Analysis Team',
+    description: '解决方案分析团队，专注于全面分析技术解决方案的可行性与实现路径',
+    roles: ['Biology Expert', 'Physics Expert', 'Engineering Manager', 'Internet Expert'],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   // More teams can be added in the future, for example:
   // { id: 'legal-team', name: 'Legal Team', ... }
 ];

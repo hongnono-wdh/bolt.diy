@@ -861,6 +861,21 @@ function SearchResultsList({ employees, onHire }: { employees: Employee[]; onHir
     // 找到团队对应的第一个员工并雇佣
     const employeeToHire = employees.find(emp => emp.id === team.id);
     if (employeeToHire) {
+      // 创建自定义团队ID
+      const teamId = `team-${team.id}`;
+      
+      // 更新已雇佣团队列表
+      const storedTeams = localStorage.getItem('bolt_hired_teams');
+      let hiredTeams = storedTeams ? JSON.parse(storedTeams) : ['dev-team', 'fiction-team'];
+
+      // 如果团队ID不在列表中，则添加
+      if (!hiredTeams.includes(teamId)) {
+        hiredTeams.push(teamId);
+        localStorage.setItem('bolt_hired_teams', JSON.stringify(hiredTeams));
+        // 触发团队列表更新事件
+        window.dispatchEvent(new Event('teamListUpdate'));
+      }
+      
       onHire(employeeToHire);
     }
   };
@@ -914,6 +929,22 @@ export default function Hiring() {
     // 这里简化了雇佣逻辑，实际应用中会有更复杂的处理
     console.log(`雇佣员工: ${employee.name}`);
     setHireMessage(`正在分配任务给 ${employee.name}...`);
+    
+    // 检查员工是否有originalId属性，有则添加到已雇佣团队列表
+    if (employee.originalId) {
+      const storedTeams = localStorage.getItem('bolt_hired_teams');
+      let hiredTeams = storedTeams ? JSON.parse(storedTeams) : ['dev-team', 'fiction-team'];
+      
+      // 如果该团队ID不在列表中，则添加
+      if (!hiredTeams.includes(employee.originalId)) {
+        hiredTeams.push(employee.originalId);
+        localStorage.setItem('bolt_hired_teams', JSON.stringify(hiredTeams));
+        
+        // 触发团队列表更新事件
+        window.dispatchEvent(new Event('teamListUpdate'));
+      }
+    }
+    
     setTimeout(() => {
       setHireMessage(`成功雇佣了 ${employee.name}!`);
       setTimeout(() => setHireMessage(''), 3000);
@@ -1197,6 +1228,20 @@ export default function Hiring() {
                             onHire={(team) => {
                               // Set current team and navigate back to chat page
                               setCurrentTeam(storeTeam.id);
+                              
+                              // Update hired teams list in localStorage
+                              const storedTeams = localStorage.getItem('bolt_hired_teams');
+                              let hiredTeams = storedTeams ? JSON.parse(storedTeams) : ['dev-team', 'fiction-team'];
+                              
+                              // If current team ID is not in the list, add it
+                              if (!hiredTeams.includes(storeTeam.id)) {
+                                hiredTeams.push(storeTeam.id);
+                                localStorage.setItem('bolt_hired_teams', JSON.stringify(hiredTeams));
+                                
+                                // Trigger team list update event
+                                window.dispatchEvent(new Event('teamListUpdate'));
+                              }
+                              
                               // Get return URL, default to home page if not provided
                               const returnUrl = searchParams.get('returnUrl') || '/';
                               navigate(returnUrl);
@@ -1219,6 +1264,23 @@ export default function Hiring() {
                             // Find and hire the first employee corresponding to this team
                             const employeeToHire = employees.find(emp => emp.id === team.id);
                             if (employeeToHire) {
+                              // Create custom team ID
+                              const teamId = `team-${team.id}`;
+                              
+                              // Update hired teams list in localStorage
+                              const storedTeams = localStorage.getItem('bolt_hired_teams');
+                              let hiredTeams = storedTeams ? JSON.parse(storedTeams) : ['dev-team', 'fiction-team'];
+                              
+                              // If team ID is not in the list, add it
+                              if (!hiredTeams.includes(teamId)) {
+                                hiredTeams.push(teamId);
+                                localStorage.setItem('bolt_hired_teams', JSON.stringify(hiredTeams));
+                                
+                                // Trigger team list update event
+                                window.dispatchEvent(new Event('teamListUpdate'));
+                              }
+                              
+                              // Perform original hire logic
                               handleHire(employeeToHire);
                             }
                           }}
