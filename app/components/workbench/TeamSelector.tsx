@@ -59,7 +59,7 @@ export function TeamSelector() {
       </div>
       
       {isOpen && (
-        <div className="absolute top-full left-0 w-full mt-2 bg-bolt-elements-background-depth-1 rounded-12px shadow-lg z-10 py-2 max-h-60 overflow-y-auto border border-[#2C2C2C]/50">
+        <div style={{zIndex:50}} className="absolute top-full left-0 w-full mt-2 bg-bolt-elements-background-depth-1 rounded-12px shadow-lg z-10 py-2 max-h-60 overflow-y-auto border border-[#2C2C2C]/50">
           {teams.map(team => (
             <div 
               key={team.id}

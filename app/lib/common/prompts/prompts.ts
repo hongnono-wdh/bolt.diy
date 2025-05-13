@@ -130,7 +130,9 @@ export const teamRolePrompts: Record<string, Record<string, string>> = {
   // Example: Customized role prompts for 'dev-team'
   'dev-team': {
     'Product Manager': `${productRolePrompt}\n\n// Development team specific requirements for Product Manager\nPlease pay special attention to technical feasibility and development complexity, working closely with engineers.`,
-    'Frontend Developer': `${developerFront}\n\n// Development team specific requirements for Frontend Developer\nFocus on component reusability and performance optimization.`
+    'Frontend Developer': `${developerFront}\n\n// Development team specific requirements for Frontend Developer\nFocus on component reusability and performance optimization.`,
+    'Backend Developer': `${developerFront}\n\n// Development team specific requirements for Backend Developer\nFocus on component reusability and performance optimization.`
+    
   },
   // Fiction & Screenwriting team specific role prompts
   'fiction-team': {

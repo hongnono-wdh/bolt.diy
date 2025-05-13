@@ -210,7 +210,7 @@ export function RoleButtonSelector() {
         </Link> */}
         
         {/* 更换团队按钮 */}
-        <button
+        {/* <button
           onClick={() => window.location.href = '/hiring?returnUrl=' + encodeURIComponent(currentPath)}
           className={`
             flex-shrink-0 bg-[#252525] rounded-12px p-2 cursor-pointer transition-colors w-[220px] text-left
@@ -231,7 +231,7 @@ export function RoleButtonSelector() {
               <div className="text-[#888] text-xs truncate">Switch to other teams</div>
             </div>
           </div>
-        </button>
+        </button> */}
       </div>
     </div>
   );
