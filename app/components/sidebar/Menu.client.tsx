@@ -19,7 +19,7 @@ const menuVariants = {
   closed: {
     opacity: 0,
     visibility: 'hidden',
-    left: '-340px',
+    left: '-270px', // 修改为与菜单宽度相匹配的值
     transition: {
       duration: 0.2,
       ease: cubicEasingFn,
@@ -164,7 +164,7 @@ export const Menu = () => {
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={menuVariants}
-        style={{ width: '340px' }}
+        style={{ width: '270px' }}
         className={classNames(
           'flex selection-accent flex-col side-menu fixed top-0 h-full',
           'bg-white dark:bg-gray-950 border-r border-gray-100 dark:border-gray-800/50',
@@ -202,17 +202,19 @@ export const Menu = () => {
           <div className="p-4 space-y-3">
             <a
               href="/"
-              className="flex gap-2 items-center bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-500/20 rounded-lg px-4 py-2 transition-colors"
+              className="relative w-full flex justify-center bg-white dark:bg-white/90 text-black dark:text-black hover:bg-gray-100 dark:hover:bg-gray-200 rounded-[12px] px-4 py-2 transition-colors"
             >
-              <span className="inline-block i-lucide:message-square h-4 w-4" />
-              <span className="text-sm font-medium">Start new chat</span>
+              <div className="flex items-center gap-2">
+                <span className="inline-block i-lucide:message-square h-4 w-4 " style={{marginLeft:"-4px"}} />
+                <span className="text-sm font-medium">New Chat</span>
+              </div>
             </a>
             <div className="relative w-full">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 <span className="i-lucide:search h-4 w-4 text-gray-400 dark:text-gray-500" />
               </div>
               <input
-                className="w-full bg-gray-50 dark:bg-gray-900 relative pl-9 pr-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500/50 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 border border-gray-200 dark:border-gray-800"
+                className="w-full bg-gray-50 dark:bg-gray-900 relative pl-9 pr-3 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-white focus:border-white text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 border border-gray-200 dark:border-gray-800"
                 type="search"
                 placeholder="Search chats..."
                 onChange={handleSearchChange}
@@ -221,7 +223,7 @@ export const Menu = () => {
             </div>
           </div>
           <div className="text-gray-600 dark:text-gray-400 text-sm font-medium px-4 py-2">Your Chats</div>
-          <div className="flex-1 overflow-auto px-3 pb-3">
+          <div className="flex-1 overflow-auto px-3 pb-6">
             {filteredList.length === 0 && (
               <div className="px-4 text-gray-500 dark:text-gray-400 text-sm">
                 {list.length === 0 ? 'No previous conversations' : 'No matches found'}
@@ -280,10 +282,10 @@ export const Menu = () => {
               </Dialog>
             </DialogRoot>
           </div>
-          <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3">
+          {/* <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-800 px-4 py-3">
             <SettingsButton onClick={handleSettingsClick} />
             <ThemeSwitch />
-          </div>
+          </div> */}
         </div>
       </motion.div>
 

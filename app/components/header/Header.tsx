@@ -30,7 +30,7 @@ export function Header() {
           <ClientOnly>
             {() => (
               <div className="mr-1">
-                <HeaderActionButtons />
+                {/* <HeaderActionButtons /> */}
               </div>
             )}
           </ClientOnly>

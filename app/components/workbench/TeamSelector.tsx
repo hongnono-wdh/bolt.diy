@@ -43,15 +43,15 @@ export function TeamSelector() {
   return (
     <div className="relative">
       <div 
-        className="p-2 bg-bolt-elements-background-depth-1 rounded-lg shadow-md cursor-pointer flex items-center justify-between"
+        className="p-4 bg-bolt-elements-background-depth-1 rounded-12px shadow-md cursor-pointer flex items-center justify-between transition-all duration-200 hover:bg-bolt-elements-background-depth-2"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-2">
-            <span className="i-ph:users-three text-bolt-elements-textPrimary"></span>
+          <div className="w-10 h-10 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-3 shadow-sm">
+            <span className="i-ph:users-three text-bolt-elements-textPrimary text-lg"></span>
           </div>
           <div>
-            <div className="text-sm font-medium text-bolt-elements-textPrimary">{currentTeam?.name || '选择团队'}</div>
+            <div className="text-sm font-medium text-bolt-elements-textPrimary mb-0.5">{currentTeam?.name || '选择团队'}</div>
             <div className="text-xs text-bolt-elements-textSecondary">{currentTeam?.roles.length || 0} roles</div>
           </div>
         </div>
@@ -59,15 +59,15 @@ export function TeamSelector() {
       </div>
       
       {isOpen && (
-        <div className="absolute top-full left-0 w-full mt-1 bg-bolt-elements-background-depth-1 rounded-lg shadow-lg z-10 py-1 max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 w-full mt-2 bg-bolt-elements-background-depth-1 rounded-12px shadow-lg z-10 py-2 max-h-60 overflow-y-auto border border-[#2C2C2C]/50">
           {teams.map(team => (
             <div 
               key={team.id}
-              className={`p-2 hover:bg-bolt-elements-background-depth-2 cursor-pointer ${currentTeam?.id === team.id ? 'bg-bolt-elements-background-depth-2' : ''}`}
+              className={`px-4 py-3 hover:bg-bolt-elements-background-depth-2 cursor-pointer ${currentTeam?.id === team.id ? 'bg-bolt-elements-background-depth-2' : ''} transition-colors duration-150`}
               onClick={() => selectTeam(team.id)}
             >
               <div className="flex items-center">
-                <div className="w-6 h-6 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-2">
+                <div className="w-8 h-8 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-3 shadow-sm">
                   <span className="i-ph:users-three text-bolt-elements-textPrimary text-sm"></span>
                 </div>
                 <div>
@@ -80,7 +80,7 @@ export function TeamSelector() {
           
           {/* Add new team option */}
           <div 
-            className="p-2 hover:bg-bolt-elements-background-depth-2 cursor-pointer border-t border-[#2C2C2C]"
+            className="px-4 py-3 hover:bg-bolt-elements-background-depth-2 cursor-pointer border-t border-[#2C2C2C] mt-2 transition-colors duration-150"
             onClick={() => {
               // Get current path for return
               const currentPath = window.location.pathname + window.location.search;
@@ -89,8 +89,8 @@ export function TeamSelector() {
               setIsOpen(false);
             }}
           >
-            <div className="flex items-center py-2">
-              <div className="w-8 h-8 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-2">
+            <div className="flex items-center py-1">
+              <div className="w-8 h-8 bg-bolt-elements-background-depth-3 rounded-full flex items-center justify-center mr-3 shadow-sm">
                 <span className="i-ph:plus text-bolt-elements-textPrimary"></span>
               </div>
               <div>

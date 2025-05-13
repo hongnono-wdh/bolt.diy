@@ -105,10 +105,12 @@ export function RoleButtonSelector() {
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
   
   return (
-    <div className="p-3 mb-4 bg-bolt-elements-background-depth-2 rounded-lg shadow-md employee-selector">
+    <div className="p-3 mb-4 bg-bolt-elements-background-depth-2 rounded-20px shadow-md employee-selector">
       {/* 团队选择器 */}
       <div className="mb-3">
-        <TeamSelector />
+        <div className="bg-[#151515] rounded-16px">
+          <TeamSelector />
+        </div>
       </div>
       
       {/* 角色列表标题 */}
@@ -149,7 +151,7 @@ export function RoleButtonSelector() {
               key={role.id}
               onClick={() => selectRole(role.id)}
               className={`
-                flex-shrink-0 bg-[#252525] rounded-lg p-2 cursor-pointer transition-colors w-[220px] text-left
+                flex-shrink-0 bg-[#252525] rounded-12px p-2 cursor-pointer transition-colors w-[220px] text-left
                 ring-2 ${isActive 
                   ? 'ring-white/30' 
                   : 'ring-[#252525]'}
@@ -211,7 +213,7 @@ export function RoleButtonSelector() {
         <button
           onClick={() => window.location.href = '/hiring?returnUrl=' + encodeURIComponent(currentPath)}
           className={`
-            flex-shrink-0 bg-[#252525] rounded-lg p-2 cursor-pointer transition-colors w-[220px] text-left
+            flex-shrink-0 bg-[#252525] rounded-12px p-2 cursor-pointer transition-colors w-[220px] text-left
             ring-2 ring-[#252525]
             hover:bg-[#303030] hover:ring-[#303030] transition-all duration-200
             active:scale-95 active:transition-transform active:duration-100

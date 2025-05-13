@@ -6,6 +6,7 @@
 @use 'components/code.scss';
 @use 'components/editor.scss';
 @use 'components/toast.scss';
+@use 'components/scrollbar.scss'; // 新添加的滚动条样式
 
 html,
 body {
