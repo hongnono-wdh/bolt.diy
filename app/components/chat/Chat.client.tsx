@@ -37,6 +37,7 @@ import { useMessageParser, usePromptEnhancer, useShortcuts, useSnapScroll } from
 import { description, useChatHistory } from '~/lib/persistence';
 import { chatStore } from '~/lib/stores/chat';
 import { roleStore } from '~/lib/stores/role';
+import { getCurrentTeam, useTeamStore } from '~/lib/stores/teamStore';
 import { getRolePrompt, useRolePromptsStore } from '~/lib/stores/rolePrompts';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { DEFAULT_MODEL, DEFAULT_PROVIDER, PROMPT_COOKIE_KEY, PROVIDER_LIST } from '~/utils/constants';
@@ -164,6 +165,8 @@ export const ChatImpl = memo(
     
     // 使用roleStore获取当前角色
     const [currentRole, setCurrentRole] = useState(() => roleStore.get());
+    // 使用teamStore获取当前团队ID
+    const [currentTeamId, setCurrentTeamId] = useState(() => getCurrentTeam()?.id || 'dev-team');
     // 获取当前角色的提示词信息
     const [currentRolePrompt, setCurrentRolePrompt] = useState(() => {
       const roleName = roleStore.get();
@@ -180,6 +183,30 @@ export const ChatImpl = memo(
         const rolePromptData = useRolePromptsStore.getState().getRolePromptByName(role);
         setCurrentRolePrompt(rolePromptData);
       });
+
+      // 监听roleChange事件（包含teamId信息）
+      const handleRoleChange = (event: CustomEvent<{role: string, teamId?: string}>) => {
+        const { role, teamId } = event.detail;
+        console.log('收到角色变更事件:', role, '团队ID:', teamId);
+        
+        if (teamId && teamId !== currentTeamId) {
+          console.log('更新团队ID:', teamId);
+          setCurrentTeamId(teamId);
+        }
+      };
+      
+      // 监听teamChange事件
+      const handleTeamChange = (event: CustomEvent<{teamId: string}>) => {
+        const { teamId } = event.detail;
+        console.log('团队变更为:', teamId);
+        
+        if (teamId !== currentTeamId) {
+          setCurrentTeamId(teamId);
+        }
+      };
+      
+      window.addEventListener('roleChange', handleRoleChange as EventListener);
+      window.addEventListener('teamChange', handleTeamChange as EventListener);
 
       // 使用组件级别的updateChatStarted函数
       
@@ -206,6 +233,8 @@ export const ChatImpl = memo(
       return () => {
         unsubscribe(); // 取消角色订阅
         window.removeEventListener('autoSendMessage', handleAutoSendMessage as EventListener);
+        window.removeEventListener('roleChange', handleRoleChange as EventListener);
+        window.removeEventListener('teamChange', handleTeamChange as EventListener);
       };
     }, []);
 
@@ -277,6 +306,7 @@ export const ChatImpl = memo(
         promptId,
         contextOptimization: contextOptimizationEnabled,
         role: currentRole, // 添加角色参数到API请求中
+        teamId: currentTeamId, // 添加团队ID参数到API请求中
       },
       sendExtraMessageFields: true,
       onError: (e) => {
@@ -384,7 +414,7 @@ export const ChatImpl = memo(
         parseMessages,
         storeMessageHistory,
       });
-    }, [messages, isLoading, parseMessages, currentRole, currentRolePrompt]);
+    }, [messages, isLoading, parseMessages, currentRole, currentRolePrompt, currentTeamId]);
 
     const scrollTextArea = () => {
       const textarea = textareaRef.current;

@@ -37,12 +37,13 @@ function parseCookies(cookieHeader: string): Record<string, string> {
 }
 
 async function chatAction({ context, request }: ActionFunctionArgs) {
-  const { messages, files, promptId, contextOptimization, role } = await request.json<{
+  const { messages, files, promptId, contextOptimization, role, teamId } = await request.json<{
     messages: Messages;
     files: any;
     promptId?: string;
     contextOptimization: boolean;
     role?: string;
+    teamId?: string; // 添加teamId参数
   }>();
 
   const cookieHeader = request.headers.get('Cookie');
@@ -244,6 +245,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           summary,
           messageSliceId,
           role,
+          teamId, // 传递teamId参数
         });
 
             result.mergeIntoDataStream(dataStream);
@@ -284,6 +286,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
               summary,
               messageSliceId,
               role,
+              teamId, // 传递teamId参数
             });
 
         (async () => {

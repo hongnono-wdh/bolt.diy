@@ -29,6 +29,7 @@ export async function streamText(props: {
   summary?: string;
   messageSliceId?: number;
   role?: string;
+  teamId?: string; // 添加teamId参数类型
 }) {
   const {
     messages,
@@ -41,6 +42,7 @@ export async function streamText(props: {
     contextOptimization,
     contextFiles,
     summary,
+    teamId,
     role,
   } = props;
   let currentModel = DEFAULT_MODEL;
@@ -100,10 +102,12 @@ export async function streamText(props: {
       allowedHtmlElements: allowedHTMLElements,
       modificationTagName: MODIFICATIONS_TAG_NAME,
       role: role ,
+      teamId:teamId
     }) ?? getSystemPrompt();
 
   console.log('系统提示词：systemPrompt', systemPrompt);
   console.log('当前角色：', role );
+  console.log('当前团队：', teamId );
   if (files && contextFiles && contextOptimization) {
     const codeContext = createFilesContext(contextFiles, true);
     const filePaths = getFilePaths(files);

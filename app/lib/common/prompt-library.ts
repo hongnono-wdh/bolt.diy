@@ -6,6 +6,7 @@ export interface PromptOptions {
   allowedHtmlElements: string[];
   modificationTagName: string;
   role?: string;
+  teamId?:string;
 }
 
 export class PromptLibrary {
@@ -20,12 +21,12 @@ export class PromptLibrary {
       default: {
         label: 'Default Prompt',
         description: 'This is the battle tested default system Prompt',
-        get: (options) => getSystemPrompt(options.cwd, options.role),
+        get: (options) => getSystemPrompt(options.cwd, options.role,options.teamId),
       },
       chatWithRole: {
         label: '带角色身份的提示词',
         description: 'This is the battle tested default system Prompt',
-        get: (options) => getSystemPrompt(options.cwd, options.role),
+        get: (options) => getSystemPrompt(options.cwd, options.role,options.role),
       },
       optimized: {
         label: 'Optimized Prompt (experimental)',
