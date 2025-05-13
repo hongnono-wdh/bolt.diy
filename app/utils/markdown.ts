@@ -64,7 +64,7 @@ function remarkThinkRawContent() {
       // console.log("查看内容替换",node.type === 'html' && node.value && node.value.startsWith('<think>'))
 
       if(node.type === 'html'){
-        console.log("查看内容替换3",node.type === 'html' &&  node.value)
+        // console.log("查看内容替换3",node.type === 'html' &&  node.value)
       }
       if (node.type === 'html' && node.value && node.value.startsWith('<think>')) {
         const cleanedContent = node.value.slice(7);
@@ -77,7 +77,7 @@ function remarkThinkRawContent() {
 
 
       if(node.type === 'html'){
-        console.log("查看内容替换2",node.type === 'html' &&  node.value)
+        // console.log("查看内容替换2",node.type === 'html' &&  node.value)
       }
       if (node.type === 'html' && node.value) {
         // 检测是否是结束标签（考虑可能的换行符）

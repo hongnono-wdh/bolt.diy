@@ -217,6 +217,8 @@ export class StreamingMessageParser {
               // 更新处理位置到Action开始标签之后
               i = actionEndIndex + 1;
             } else {
+
+              console.log("标签不完整")
               // Action标签不完整，等待更多输入
               break;
             }
@@ -344,7 +346,12 @@ export class StreamingMessageParser {
   #parseActionTag(input: string, actionOpenIndex: number, actionEndIndex: number) {
     const actionTag = input.slice(actionOpenIndex, actionEndIndex + 1);
 
+
+
     const actionType = this.#extractAttribute(actionTag, 'type') as ActionType;
+
+
+    console.log("解析标签",actionTag,actionType)
 
     const actionAttributes = {
       type: actionType,
@@ -359,7 +366,7 @@ export class StreamingMessageParser {
       }
 
       (actionAttributes as FileAction).filePath = filePath;
-    } else if ([ 'changerole'].includes(actionType)) {
+    } else if (['changerole'].includes(actionType)) {
       const role = this.#extractAttribute(actionTag, 'role') as string;
       (actionAttributes as ChangeRoleAction ).role = role;
 

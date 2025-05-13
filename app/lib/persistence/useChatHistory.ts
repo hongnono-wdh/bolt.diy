@@ -281,7 +281,7 @@ ${value.content}
 
       const { firstArtifact } = workbenchStore;
 
-      console.log("数据存储调试2",messages)
+      // console.log("数据存储调试2",messages)
       messages = messages.filter((m) => !m.annotations?.includes('no-store'));
 
       let _urlId = urlId;

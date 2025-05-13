@@ -165,6 +165,9 @@ export class ActionRunner {
           break;
         }
         case 'changerole': {
+          console.log("更换角色",action);
+          logger.info(`更换角色`,action);
+
           await this.#runChangeRoleAction(action);
           break;
         }
