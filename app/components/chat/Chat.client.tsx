@@ -213,18 +213,65 @@ export const ChatImpl = memo(
       // 监听自动发送消息事件
       const handleAutoSendMessage = (event: CustomEvent) => {
         const { message } = event.detail;
-
-        console.log('自动发送消息:', chatStartedRef.current);
-        if (message) {
-          // 确保chatStarted为true
-          if (!chatStartedRef.current) {
-            console.log('通过ref设置chatStarted为true');
-            updateChatStarted(true);
-          }
+        if (message && textareaRef.current) {
+          // 设置文本框内容为自动消息
+          textareaRef.current.value = message;
+          setInput(message);
           
-          // 直接调用sendMessage，不需要setTimeout
-          console.log('自动发送消息，使用ref值:', chatStartedRef.current);
-          sendMessage({} as React.UIEvent, message);
+          // 自动调整文本框高度
+          const textarea = textareaRef.current;
+          textarea.style.height = 'auto';
+          textarea.style.height = `${Math.min(textarea.scrollHeight, TEXTAREA_MAX_HEIGHT)}px`;
+          textarea.style.overflowY = textarea.scrollHeight > TEXTAREA_MAX_HEIGHT ? 'auto' : 'hidden';
+          
+          // 延迟发送
+          setTimeout(() => {
+            // 创建一个伪事件对象
+            const fakeEvent = {} as React.UIEvent;
+
+            // 直接在这里修改 sendMessage 函数的实现，添加自动消息标识
+            console.log('准备发送自动消息:', message);
+            
+            // 我们需要直接修改 append 函数的行为，而不是通过 sendMessage
+            const messageContent = message;
+            
+            if (!chatStartedRef.current) {
+              updateChatStarted(true);
+            }
+            
+            // 生成基于角色名称的固定头像索引
+            let seed = 0;
+            for (let i = 0; i < currentRole.length; i++) {
+              seed += currentRole.charCodeAt(i);
+            }
+            const avatarIndex = (seed * 37) % 250;
+
+            // 创建 roleInfo 对象
+            const roleInfo = {
+              roleName: currentRole,
+              rolePrompt: currentRolePrompt?.prompt || '',
+              roleDescription: currentRolePrompt?.description,
+              avatarIndex: avatarIndex,
+            };
+
+            append({
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `[Model: ${model}]\n\n[Provider: ${provider.name}]\n\n${messageContent}`,
+                },
+              ] as any,
+              isAutoMessage: true, // 标识这是自动发送的消息
+              roleInfo: roleInfo, // 添加角色信息
+            } as EnhancedMessage);
+            
+            // 重置输入框
+            setInput('');
+            Cookies.remove(PROMPT_COOKIE_KEY);
+            textareaRef.current?.blur();
+            
+          }, 500);
         }
       };
 

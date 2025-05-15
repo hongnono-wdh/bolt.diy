@@ -14,8 +14,6 @@ import { profileStore } from '~/lib/stores/profile';
 import { forwardRef } from 'react';
 import type { ForwardedRef } from 'react';
 
-
-
 // 基于角色名称生成固定头像索引的函数
 function generateAvatarIndex(roleName: string): number {
   let seed = 0;
@@ -24,7 +22,6 @@ function generateAvatarIndex(roleName: string): number {
   }
   return (seed * 37) % 250; // 使用质数乘法和名称字符码确保固定的头像分配
 }
-
 
 interface MessagesProps {
   id?: string;
@@ -69,7 +66,6 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
               const isLast = index === messages.length - 1;
               const isHidden = annotations?.includes('hidden');
 
-
               // console.log("内部消息组件message", message);
               // // 打印角色信息
               // if ((message as EnhancedMessage).roleInfo) {
@@ -83,7 +79,7 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
               return (
                 <div
                   key={index}
-                  className={classNames('flex gap-4 p-6 w-full rounded-[20px]', {
+                  className={classNames('flex gap-4 p-6 w-full rounded-[20px] relative', {
                     'bg-bolt-elements-messages-background': isUserMessage || !isStreaming || (isStreaming && !isLast),
                     'bg-gradient-to-b from-bolt-elements-messages-background from-30% to-transparent':
                       isStreaming && isLast,
@@ -107,20 +103,20 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                   )} */}
                   <div className="grid grid-col-1 w-full">
                     {/* AI消息显示角色信息 */}
-                    {!isUserMessage && message.roleInfo && (
+                    {(!isUserMessage || (message as EnhancedMessage).isAutoMessage === true) && message.roleInfo && (
                       <div className="flex items-center mb-3">
                         <WithTooltip tooltip={`role: ${message.roleInfo.roleDescription || ''}`}>
                           <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
                             {message.roleInfo.avatarIndex !== undefined ? (
-                              <img 
+                              <img
                                 src={`/assets/images/avatar/${message.roleInfo.avatarIndex}.png`}
-                                alt={message.roleInfo.roleName || 'AI'} 
+                                alt={message.roleInfo.roleName || 'AI'}
                                 className="w-7 h-7 rounded-full object-cover mr-1"
                                 loading="eager"
                                 decoding="sync"
                               />
                             ) : message.roleInfo.roleName ? (
-                              <img 
+                              <img
                                 src={`/assets/images/avatar/${(() => {
                                   // 内联实现基于角色名称的固定头像索引生成
                                   let seed = 0;
@@ -129,7 +125,7 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                                   }
                                   return (seed * 37) % 250;
                                 })()}.png`}
-                                alt={message.roleInfo.roleName} 
+                                alt={message.roleInfo.roleName}
                                 className="w-7 h-7 rounded-full object-cover mr-1"
                                 loading="eager"
                                 decoding="sync"
@@ -143,11 +139,30 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                         {/* <div className="ml-2 text-xs text-bolt-elements-textTertiary">Responding as this role</div> */}
                       </div>
                     )}
-                    {isUserMessage ? (
-                      <UserMessage content={content} />
-                    ) : (
-                      <AssistantMessage content={content} annotations={message.annotations} />
-                    )}
+                    {/* 为自动消息添加带样式的@角色标签 */}
+                    <div className="flex flex-col w-full">
+                      {isUserMessage ? (
+                        <div className="relative w-full">
+                          <div className="overflow-hidden pt-[4px]">
+                            {/* 在同一个容器中直接呈现消息内容 */}
+                            <span className="message-content inline">
+                              <UserMessage content={content} />
+                            </span>
+
+                            {/* 如果是自动消息，在内容前显示@角色标签 */}
+                            {(message as EnhancedMessage).isAutoMessage === true &&
+                              (message as EnhancedMessage).roleInfo?.roleName && (
+                                <span className="inline-block mt-3 mr-2 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium">
+                                  <span className="font-bold">@</span>
+                                  <span className="ml-0.5">{(message as EnhancedMessage).roleInfo?.roleName}</span>
+                                </span>
+                              )}
+                          </div>
+                        </div>
+                      ) : (
+                        <AssistantMessage content={content} annotations={message.annotations} />
+                      )}
+                    </div>
                   </div>
                   {!isUserMessage && (
                     <div className="flex gap-2 flex-col lg:flex-row">

@@ -93,7 +93,7 @@ export function setRole(role: string, nextStepContent?: string, skipEvent: boole
       window.dispatchEvent(new CustomEvent('autoSendMessage', { 
         detail: { message: nextStepContent } 
       }));
-    }, 500);
+    }, 2000);
   }
 }
 

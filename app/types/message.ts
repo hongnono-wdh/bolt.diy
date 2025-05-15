@@ -11,4 +11,5 @@ export interface EnhancedMessage extends Message {
     roleDescription?: string; // 角色描述（可选）
     avatarIndex?: number;  // 头像索引，用于显示头像图片
   };
+  isAutoMessage?: boolean; // 标识消息是否由自动发送触发
 }
