@@ -9,5 +9,6 @@ export interface EnhancedMessage extends Message {
     roleName: string;      // 角色名称
     rolePrompt: string;    // 使用的提示词
     roleDescription?: string; // 角色描述（可选）
+    avatarIndex?: number;  // 头像索引，用于显示头像图片
   };
 }

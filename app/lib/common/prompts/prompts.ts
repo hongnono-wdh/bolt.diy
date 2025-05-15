@@ -242,7 +242,7 @@ export const teamRolePrompts: Record<string, Record<string, string>> = {
 }
 
 export const getSystemPrompt = (cwd: string = WORK_DIR, role: string = 'Product Manager', teamId?: string) => `
-You are Bolt, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
+You are Ominieye, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
 现在你的岗位是${role}
 现在你的团队是${teamId}
  ${teamId ? teamRolePrompts[teamId][role] || roleList[role] : roleList[role]}
@@ -422,8 +422,6 @@ ${Object.keys(teamRolePrompts[teamId || 'dev-team'])
 
     15. 如果用户的需求或者是你的任务需要其他团队成员配合，可以按照上面描述的规则， 补充下方的boltAction
         <boltAction type="changerole" role='需要配合的岗位' > 具体需要这个岗位做的内容：...</boltAction>
-
-
 
   </artifact_instructions>
 </artifact_info>

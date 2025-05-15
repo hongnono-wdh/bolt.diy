@@ -99,11 +99,21 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                       <div className="flex items-center mb-3">
                         <WithTooltip tooltip={`角色描述: ${message.roleInfo.roleDescription || ''}`}>
                           <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
-                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                            {message.roleInfo.avatarIndex !== undefined ? (
+                              <img 
+                                src={`/assets/images/avatar/${message.roleInfo.avatarIndex}.png`}
+                                alt={message.roleInfo.roleName || 'AI'} 
+                                className="w-5 h-5 rounded-full object-cover mr-1"
+                                loading="eager"
+                                decoding="sync"
+                              />
+                            ) : (
+                              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-1"></div>
+                            )}
                             {message.roleInfo.roleName}
                           </div>
                         </WithTooltip>
-                        <div className="ml-2 text-xs text-bolt-elements-textTertiary">Responding as this role</div>
+                        {/* <div className="ml-2 text-xs text-bolt-elements-textTertiary">Responding as this role</div> */}
                       </div>
                     )}
                     {isUserMessage ? (

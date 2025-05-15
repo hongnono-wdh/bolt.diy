@@ -467,7 +467,7 @@ interface Team {
   originalId?: string;
 }
 
-function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }) {
+function TeamCard({ team, onHire, disabled = false }: { team: Team; onHire: (team: Team) => void; disabled?: boolean }) {
   const { isLoading, setIsLoading } = useLoading();
 
   // 开发者图标
@@ -583,13 +583,15 @@ function TeamCard({ team, onHire }: { team: Team; onHire: (team: Team) => void }
 
         <button
           onClick={() => handleHireWithLoading(team)}
-          disabled={isLoading}
-          className="
-            px-6 py-2 bg-white hover:bg-gray-100 text-[#333333] text-[14px] rounded-full 
+          disabled={isLoading || disabled}
+          className={`
+            px-6 py-2 text-[14px] rounded-full 
             flex items-center justify-center transition-all 
-            disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed
             font-bold
-          "
+            ${disabled 
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-80' 
+              : 'bg-white hover:bg-gray-100 text-[#333333] disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed'}
+          `}
         >
           {isLoading ? (
             <>
@@ -1254,35 +1256,20 @@ export default function Hiring() {
                   
                   {/* Then display dynamically generated teams */}
                   <div className="mt-8">
-                    <h5 className="text-white text-md font-medium mb-4">Recommended Teams</h5>
+                    <h5 className="text-white text-md font-medium mb-4">Coming Soon</h5>
                     <div className="flex flex-col space-y-8">
                       {convertEmployeesToTeam(employees).map(team => (
                         <TeamCard 
                           key={team.id} 
-                          team={team} 
+                          disabled={true} /* 使用禁用属性标记即将上线的团队 */
+                          team={{
+                            ...team,
+                            hiringPrice: 0, // 显示免费标志
+                            description: team.description + ' (即将上线，暂不可用)' // 在描述中添加提示
+                          }}
                           onHire={(team) => {
-                            // Find and hire the first employee corresponding to this team
-                            const employeeToHire = employees.find(emp => emp.id === team.id);
-                            if (employeeToHire) {
-                              // Create custom team ID
-                              const teamId = `team-${team.id}`;
-                              
-                              // Update hired teams list in localStorage
-                              const storedTeams = localStorage.getItem('bolt_hired_teams');
-                              let hiredTeams = storedTeams ? JSON.parse(storedTeams) : ['dev-team', 'fiction-team'];
-                              
-                              // If team ID is not in the list, add it
-                              if (!hiredTeams.includes(teamId)) {
-                                hiredTeams.push(teamId);
-                                localStorage.setItem('bolt_hired_teams', JSON.stringify(hiredTeams));
-                                
-                                // Trigger team list update event
-                                window.dispatchEvent(new Event('teamListUpdate'));
-                              }
-                              
-                              // Perform original hire logic
-                              handleHire(employeeToHire);
-                            }
+                            /* 不执行集成操作，只显示提示 */
+                            alert('该功能即将上线，暂时不可用！');
                           }}
                         />
                       ))}

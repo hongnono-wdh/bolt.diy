@@ -388,10 +388,20 @@ export const ChatImpl = memo(
           // console.log('在流式传输开始时给AI回复添加角色信息');
 
           // 获取当前角色信息
+          // 生成基于角色名称的固定头像索引
+          // 使用角色名称字符码值的和作为种子
+          let seed = 0;
+          for (let i = 0; i < currentRole.length; i++) {
+            seed += currentRole.charCodeAt(i);
+          }
+          // 使用类似 EmployeeSelector 的算法确保索引在正确范围内
+          const avatarIndex = (seed * 37) % 250;
+          
           const roleInfo = {
             roleName: currentRole,
             rolePrompt: currentRolePrompt?.prompt || '',
             roleDescription: currentRolePrompt?.description,
+            avatarIndex: avatarIndex,
           };
 
           // 为AI回复消息添加角色信息
