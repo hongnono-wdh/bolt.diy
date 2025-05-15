@@ -56,7 +56,7 @@ const getInitialRole = () => {
 export const roleAtom = atom<string>(getInitialRole());
 
 // 设置角色并触发相关事件
-export function setRole(role: string, nextStepContent?: string, skipEvent: boolean = false): void {
+export function setRole(role: string, nextStepContent?: string, skipEvent: boolean = false, skipAutoMessage: boolean = false): void {
   // 更新状态
   roleAtom.set(role);
   
@@ -85,13 +85,16 @@ export function setRole(role: string, nextStepContent?: string, skipEvent: boole
     }));
   }
   
-  // 处理下一步内容
-  if (nextStepContent && typeof window !== 'undefined') {
-    logger.debug('准备自动提问:', nextStepContent);
+  // 处理下一步内容（如果不跳过自动消息）
+  if (!skipAutoMessage && nextStepContent && typeof window !== 'undefined') {
+    logger.debug('准备自动提问:', nextStepContent, '角色:', role);
     // 延迟一点时间，确保角色已经切换完成
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('autoSendMessage', { 
-        detail: { message: nextStepContent } 
+        detail: { 
+          message: nextStepContent,
+          roleName: role  // 传递角色名称信息
+        } 
       }));
     }, 2000);
   }
@@ -139,8 +142,8 @@ export const roleStore = {
   /**
    * 设置当前角色并通知订阅者
    */
-  set(role: string, nextStepContent?: string, skipEvent: boolean = false): void {
-    setRole(role, nextStepContent, skipEvent);
+  set(role: string, nextStepContent?: string, skipEvent: boolean = false, skipAutoMessage: boolean = false): void {
+    setRole(role, nextStepContent, skipEvent, skipAutoMessage);
   },
 
   /**

@@ -393,21 +393,43 @@ export class ActionRunner {
     logger.debug('Running changerole action', action);
 
     try {
-      // 解析内容，格式可能是 "角色名称|下一步内容"
+      // 解析内容，获取角色和下一步内容
       const content = action.content.trim();
       const role = action.role;
       const nextStepContent = content.trim();
       
-      // 动态导入roleStore以避免循环依赖
-      const { roleStore } = await import('~/lib/stores/role');
+      // 先发送消息（使用当前角色），如果有下一步内容
+      if (typeof window !== 'undefined' && nextStepContent) {
+        logger.debug('先发送自动消息:', nextStepContent, '在切换到新角色前');
+        
+        window.dispatchEvent(new CustomEvent('autoSendMessage', { 
+          detail: { 
+            message: nextStepContent
+            // 不指定 roleName，这样消息会使用当前角色
+          } 
+        }));
+      }
       
-      // 使用roleStore设置角色和下一步内容
-      roleStore.set(role, nextStepContent);
+      // 在发送消息后，再进行角色切换
+      setTimeout(async () => {
+        try {
+          logger.debug('开始切换到新角色:', role);
+          
+          // 动态导入roleStore以避免循环依赖
+          const { roleStore } = await import('~/lib/stores/role');
+          
+          // 使用roleStore设置新角色（设置skipAutoMessage=true避免再次触发自动消息）
+          roleStore.set(role, undefined, false, true); // 第四个参数为true表示跳过自动发送消息
+          
+          logger.debug('角色成功切换为:', role);
+        } catch (e) {
+          logger.error('切换角色失败', e);
+        }
+      }, 1000); // 等待自动消息发送后再切换角色
       
-      logger.debug('角色已自动切换为:', role);
     } catch (e) {
-      logger.error('角色切换失败', e);
-      throw new Error('Failed to change role');
+      logger.error('命令处理失败', e);
+      throw new Error('Failed to process changerole action');
     }
   }
 }

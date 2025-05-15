@@ -212,7 +212,8 @@ export const ChatImpl = memo(
       
       // 监听自动发送消息事件
       const handleAutoSendMessage = (event: CustomEvent) => {
-        const { message } = event.detail;
+        // 提取消息内容和角色名称（如果有）
+        const { message, roleName } = event.detail;
         if (message && textareaRef.current) {
           // 设置文本框内容为自动消息
           textareaRef.current.value = message;
@@ -229,31 +230,35 @@ export const ChatImpl = memo(
             // 创建一个伪事件对象
             const fakeEvent = {} as React.UIEvent;
 
-            // 直接在这里修改 sendMessage 函数的实现，添加自动消息标识
-            console.log('准备发送自动消息:', message);
+            console.log('准备发送自动消息:', message, roleName ? `角色: ${roleName}` : '');
             
-            // 我们需要直接修改 append 函数的行为，而不是通过 sendMessage
+            // 消息内容
             const messageContent = message;
             
             if (!chatStartedRef.current) {
               updateChatStarted(true);
             }
             
+            // 使用指定的角色名称（如果有）或当前角色
+            const messageRoleName = roleName || currentRole;
+            
             // 生成基于角色名称的固定头像索引
             let seed = 0;
-            for (let i = 0; i < currentRole.length; i++) {
-              seed += currentRole.charCodeAt(i);
+            for (let i = 0; i < messageRoleName.length; i++) {
+              seed += messageRoleName.charCodeAt(i);
             }
             const avatarIndex = (seed * 37) % 250;
 
-            // 创建 roleInfo 对象
-            const roleInfo = {
-              roleName: currentRole,
-              rolePrompt: currentRolePrompt?.prompt || '',
-              roleDescription: currentRolePrompt?.description,
+            // 创建特定于此消息的角色信息
+            const messageRoleInfo = {
+              roleName: messageRoleName,
+              // 如果是指定的角色，使用空值，否则使用当前角色的提示词
+              rolePrompt: roleName ? "" : (currentRolePrompt?.prompt || ''),
+              roleDescription: roleName ? "" : currentRolePrompt?.description,
               avatarIndex: avatarIndex,
             };
 
+            // 使用 append 函数添加消息，并加上角色信息
             append({
               role: 'user',
               content: [
@@ -263,7 +268,7 @@ export const ChatImpl = memo(
                 },
               ] as any,
               isAutoMessage: true, // 标识这是自动发送的消息
-              roleInfo: roleInfo, // 添加角色信息
+              roleInfo: messageRoleInfo, // 使用特定于此消息的角色信息
             } as EnhancedMessage);
             
             // 重置输入框
