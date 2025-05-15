@@ -12,4 +12,5 @@ export interface EnhancedMessage extends Message {
     avatarIndex?: number;  // 头像索引，用于显示头像图片
   };
   isAutoMessage?: boolean; // 标识消息是否由自动发送触发
+  targetRole?: string;     // 目标角色（新角色），用于标识发送消息后要切换到的角色
 }

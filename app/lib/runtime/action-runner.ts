@@ -398,14 +398,15 @@ export class ActionRunner {
       const role = action.role;
       const nextStepContent = content.trim();
       
-      // 先发送消息（使用当前角色），如果有下一步内容
+      // 先发送消息（使用当前角色），并传递目标角色信息
       if (typeof window !== 'undefined' && nextStepContent) {
-        logger.debug('先发送自动消息:', nextStepContent, '在切换到新角色前');
+        logger.debug('先发送自动消息:', nextStepContent, '当前使用当前角色，但显示目标角色:', role);
         
         window.dispatchEvent(new CustomEvent('autoSendMessage', { 
           detail: { 
-            message: nextStepContent
-            // 不指定 roleName，这样消息会使用当前角色
+            message: nextStepContent,
+            // 消息使用当前角色，但需要额外传递目标角色也就是新角色
+            targetRole: role  // 添加目标角色（新角色）信息
           } 
         }));
       }
@@ -425,7 +426,7 @@ export class ActionRunner {
         } catch (e) {
           logger.error('切换角色失败', e);
         }
-      }, 1000); // 等待自动消息发送后再切换角色
+      }, 5000); // 等待自动消息发送后再切换角色
       
     } catch (e) {
       logger.error('命令处理失败', e);

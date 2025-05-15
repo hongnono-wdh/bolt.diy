@@ -150,11 +150,15 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                             </span>
 
                             {/* 如果是自动消息，在内容前显示@角色标签 */}
-                            {(message as EnhancedMessage).isAutoMessage === true &&
-                              (message as EnhancedMessage).roleInfo?.roleName && (
+                            {(message as EnhancedMessage).isAutoMessage === true && (
+                              // 优先使用targetRole（新角色），如果没有才使用当前角色
+                              (message as EnhancedMessage).targetRole || (message as EnhancedMessage).roleInfo?.roleName) && (
                                 <span className="inline-block mt-3 mr-2 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium">
                                   <span className="font-bold">@</span>
-                                  <span className="ml-0.5">{(message as EnhancedMessage).roleInfo?.roleName}</span>
+                                  <span className="ml-0.5">
+                                    {/* 优先显示目标角色（新角色） */}
+                                    {(message as EnhancedMessage).targetRole || (message as EnhancedMessage).roleInfo?.roleName}
+                                  </span>
                                 </span>
                               )}
                           </div>

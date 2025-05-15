@@ -212,8 +212,8 @@ export const ChatImpl = memo(
       
       // 监听自动发送消息事件
       const handleAutoSendMessage = (event: CustomEvent) => {
-        // 提取消息内容和角色名称（如果有）
-        const { message, roleName } = event.detail;
+        // 提取消息内容、角色名称和目标角色（如果有）
+        const { message, roleName, targetRole } = event.detail;
         if (message && textareaRef.current) {
           // 设置文本框内容为自动消息
           textareaRef.current.value = message;
@@ -269,6 +269,7 @@ export const ChatImpl = memo(
               ] as any,
               isAutoMessage: true, // 标识这是自动发送的消息
               roleInfo: messageRoleInfo, // 使用特定于此消息的角色信息
+              targetRole: targetRole, // 添加目标角色信息（新角色）
             } as EnhancedMessage);
             
             // 重置输入框
