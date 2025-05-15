@@ -456,6 +456,7 @@ interface TeamMember {
   name: string;
   position: string;
   avatar?: string;
+  avatarIndex?: number; // 添加固定头像索引属性
 }
 
 interface Team {
@@ -503,8 +504,9 @@ function TeamCard({ team, onHire, disabled = false }: { team: Team; onHire: (tea
 
   // 生成团队成员头像
   const renderTeamMemberAvatar = (member: TeamMember, index: number) => {
-    // 使用成员索引来选择不同的头像图片，确保在0-249范围内
-    const avatarIndex = index % 250;
+    // 优先使用member中的avatarIndex，如果没有则使用index参数
+    // 这确保了同一成员始终使用相同的头像
+    const avatarIndex = member.avatarIndex !== undefined ? member.avatarIndex : index % 250;
     return (
       <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0">
         <img 
@@ -699,11 +701,21 @@ function convertEmployeesToTeam(employees: Employee[]): Team[] {
   // 创建团队对象的帮助函数
   const createTeam = (teamEmployees: Employee[], teamNamePrefix: string, departmentType: string) => {
     // 创建团队成员数组
-    const members: TeamMember[] = teamEmployees.map(emp => ({
-      name: emp.name,
-      position: emp.position,
-      avatar: emp.avatar
-    }));
+    const members: TeamMember[] = teamEmployees.map(emp => {
+      // 基于名称生成固定头像索引
+      let seed = 0;
+      for (let i = 0; i < emp.name.length; i++) {
+        seed += emp.name.charCodeAt(i);
+      }
+      const avatarIndex = (seed * 37) % 250;
+      
+      return {
+        name: emp.name,
+        position: emp.position,
+        avatar: emp.avatar,
+        avatarIndex: avatarIndex // 添加avatarIndex属性
+      };
+    });
     
     // 生成团队描述
     let keyPositions = teamEmployees.slice(0, 3).map(e => e.position).join(', ');
@@ -1216,11 +1228,21 @@ export default function Hiring() {
                           name: storeTeam.name,
                           description: storeTeam.description,
                           hiringPrice: 499, // Default price
-                          members: storeTeam.roles.map((role, index) => ({
-                            name: role,
-                            position: role,
-                            avatar: `/assets/images/avatar/${(index * 37) % 250}.png` // Generate random avatar
-                          }))
+                          members: storeTeam.roles.map((role, index) => {
+                            // 基于角色名称生成固定头像索引
+                            let seed = 0;
+                            for (let i = 0; i < role.length; i++) {
+                              seed += role.charCodeAt(i);
+                            }
+                            const avatarIndex = (seed * 37) % 250;
+                            
+                            return {
+                              name: role,
+                              position: role,
+                              avatar: `/assets/images/avatar/${(index * 37) % 250}.png`,
+                              avatarIndex: avatarIndex // 添加固定头像索引
+                            };
+                          })
                         };
                         
                         return (

@@ -143,8 +143,12 @@ export function RoleButtonSelector() {
       <div className="flex items-center space-x-4 overflow-x-auto p-3 team-scrollbar">
         {roles.map((role, index) => {
           const isActive = currentRole === role.id;
-          // 随机生成头像索引
-          const avatarIndex = (index * 37) % 250; // 使用质数乘法确保更好的随机分布
+          // 基于角色名称生成固定头像索引
+          let seed = 0;
+          for (let i = 0; i < role.name.length; i++) {
+            seed += role.name.charCodeAt(i);
+          }
+          const avatarIndex = (seed * 37) % 250; // 使用质数乘法和名称字符码确保固定的头像分配
           
           return (
             <button
