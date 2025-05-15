@@ -14,6 +14,18 @@ import { profileStore } from '~/lib/stores/profile';
 import { forwardRef } from 'react';
 import type { ForwardedRef } from 'react';
 
+
+
+// 基于角色名称生成固定头像索引的函数
+function generateAvatarIndex(roleName: string): number {
+  let seed = 0;
+  for (let i = 0; i < roleName.length; i++) {
+    seed += roleName.charCodeAt(i);
+  }
+  return (seed * 37) % 250; // 使用质数乘法和名称字符码确保固定的头像分配
+}
+
+
 interface MessagesProps {
   id?: string;
   className?: string;
@@ -78,7 +90,7 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                     'mt-4': !isFirst,
                   })}
                 >
-                  {isUserMessage && (
+                  {/* {isUserMessage && (
                     <div className="flex items-center justify-center w-[40px] h-[40px] overflow-hidden bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-500 rounded-full shrink-0 self-start">
                       {profile?.avatar ? (
                         <img
@@ -92,18 +104,33 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                         <div className="i-ph:user-fill text-2xl" />
                       )}
                     </div>
-                  )}
+                  )} */}
                   <div className="grid grid-col-1 w-full">
                     {/* AI消息显示角色信息 */}
                     {!isUserMessage && message.roleInfo && (
                       <div className="flex items-center mb-3">
-                        <WithTooltip tooltip={`角色描述: ${message.roleInfo.roleDescription || ''}`}>
+                        <WithTooltip tooltip={`role: ${message.roleInfo.roleDescription || ''}`}>
                           <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
                             {message.roleInfo.avatarIndex !== undefined ? (
                               <img 
                                 src={`/assets/images/avatar/${message.roleInfo.avatarIndex}.png`}
                                 alt={message.roleInfo.roleName || 'AI'} 
-                                className="w-5 h-5 rounded-full object-cover mr-1"
+                                className="w-7 h-7 rounded-full object-cover mr-1"
+                                loading="eager"
+                                decoding="sync"
+                              />
+                            ) : message.roleInfo.roleName ? (
+                              <img 
+                                src={`/assets/images/avatar/${(() => {
+                                  // 内联实现基于角色名称的固定头像索引生成
+                                  let seed = 0;
+                                  for (let i = 0; i < message.roleInfo.roleName.length; i++) {
+                                    seed += message.roleInfo.roleName.charCodeAt(i);
+                                  }
+                                  return (seed * 37) % 250;
+                                })()}.png`}
+                                alt={message.roleInfo.roleName} 
+                                className="w-7 h-7 rounded-full object-cover mr-1"
                                 loading="eager"
                                 decoding="sync"
                               />
