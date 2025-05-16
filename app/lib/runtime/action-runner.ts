@@ -395,20 +395,41 @@ export class ActionRunner {
     try {
       // 解析内容，获取角色和下一步内容
       const content = action.content.trim();
-      const role = action.role;
+      const role = action.role; // 目标角色（新角色）
       const nextStepContent = content.trim();
       
-      // 先发送消息（使用当前角色），并传递目标角色信息
-      if (typeof window !== 'undefined' && nextStepContent) {
-        logger.debug('先发送自动消息:', nextStepContent, '当前使用当前角色，但显示目标角色:', role);
+      // 先获取当前角色（原始角色），再发送消息
+      try {
+        // 动态导入roleStore以获取当前角色
+        const { roleStore } = await import('~/lib/stores/role');
+        const currentRole = roleStore.get(); // 获取当前角色
         
-        window.dispatchEvent(new CustomEvent('autoSendMessage', { 
-          detail: { 
-            message: nextStepContent,
-            // 消息使用当前角色，但需要额外传递目标角色也就是新角色
-            targetRole: role  // 添加目标角色（新角色）信息
-          } 
-        }));
+        logger.debug('当前角色为:', currentRole, '将变更为:', role);
+        
+        // 先发送消息（使用当前角色），并传递目标角色信息
+        if (typeof window !== 'undefined' && nextStepContent) {
+          logger.debug('先发送自动消息:', nextStepContent, '当前使用原始角色:', currentRole, '显示目标角色:', role);
+          
+          window.dispatchEvent(new CustomEvent('autoSendMessage', { 
+            detail: { 
+              message: nextStepContent,
+              originalRole: currentRole, // 显式指定原始角色（当前角色）
+              targetRole: role         // 指定目标角色（新角色）
+            } 
+          }));
+        }
+      } catch (e) {
+        logger.error('获取当前角色失败', e);
+        
+        // 如果无法获取当前角色，仍尝试发送消息
+        if (typeof window !== 'undefined' && nextStepContent) {
+          window.dispatchEvent(new CustomEvent('autoSendMessage', { 
+            detail: { 
+              message: nextStepContent,
+              targetRole: role // 至少指定目标角色
+            } 
+          }));
+        }
       }
       
       // 在发送消息后，再进行角色切换
@@ -426,7 +447,7 @@ export class ActionRunner {
         } catch (e) {
           logger.error('切换角色失败', e);
         }
-      }, 5000); // 等待自动消息发送后再切换角色
+      }, 2000); // 等待自动消息发送后再切换角色
       
     } catch (e) {
       logger.error('命令处理失败', e);

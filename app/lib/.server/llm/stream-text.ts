@@ -105,7 +105,7 @@ export async function streamText(props: {
       teamId:teamId
     }) ?? getSystemPrompt();
 
-  console.log('系统提示词：systemPrompt', systemPrompt);
+  // console.log('系统提示词：systemPrompt', systemPrompt);
   console.log('当前角色：', role );
   console.log('当前团队：', teamId );
   if (files && contextFiles && contextOptimization) {

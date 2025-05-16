@@ -212,8 +212,13 @@ export const ChatImpl = memo(
       
       // 监听自动发送消息事件
       const handleAutoSendMessage = (event: CustomEvent) => {
-        // 提取消息内容、角色名称和目标角色（如果有）
-        const { message, roleName, targetRole } = event.detail;
+        // 提取消息内容、原始角色、角色名称和目标角色（如果有）
+        const { message, originalRole, roleName, targetRole } = event.detail;
+        
+        // 获取当前角色和角色提示词作为备用，优先使用䳊此事件传入的originalRole
+        const fallbackRole = currentRole;
+        const fallbackRolePrompt = currentRolePrompt;
+        
         if (message && textareaRef.current) {
           // 设置文本框内容为自动消息
           textareaRef.current.value = message;
@@ -239,8 +244,9 @@ export const ChatImpl = memo(
               updateChatStarted(true);
             }
             
-            // 使用指定的角色名称（如果有）或当前角色
-            const messageRoleName = roleName || currentRole;
+            // 使用指定的角色名称（如果有）、原始角色（由action-runner传入）或当前角色
+            const messageRoleName = roleName || originalRole || fallbackRole;
+            console.log('自动消息使用角色:', messageRoleName, '目标角色:', targetRole, '原始角色:', originalRole);
             
             // 生成基于角色名称的固定头像索引
             let seed = 0;
@@ -249,12 +255,12 @@ export const ChatImpl = memo(
             }
             const avatarIndex = (seed * 37) % 250;
 
-            // 创建特定于此消息的角色信息
+            // 创建特定于此消息的角色信息，使用快照中的原始提示词
             const messageRoleInfo = {
               roleName: messageRoleName,
-              // 如果是指定的角色，使用空值，否则使用当前角色的提示词
-              rolePrompt: roleName ? "" : (currentRolePrompt?.prompt || ''),
-              roleDescription: roleName ? "" : currentRolePrompt?.description,
+              // 使用提示词逻辑：如果有指定角色则置空，否则直接使用当前角色提示词
+              rolePrompt: roleName ? "" : (fallbackRolePrompt?.prompt || ''),
+              roleDescription: roleName ? "" : fallbackRolePrompt?.description,
               avatarIndex: avatarIndex,
             };
 
