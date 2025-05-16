@@ -1,6 +1,6 @@
 import type { Message } from 'ai';
 import type { EnhancedMessage } from '~/types/message';
-import { Fragment } from 'react';
+import { Fragment, memo, useMemo, useCallback } from 'react';
 import { classNames } from '~/utils/classNames';
 import { AssistantMessage } from './AssistantMessage';
 import { UserMessage } from './UserMessage';
@@ -22,6 +22,79 @@ function generateAvatarIndex(roleName: string): number {
   }
   return (seed * 37) % 250; // 使用质数乘法和名称字符码确保固定的头像分配
 }
+
+// 使用React.memo优化的Avatar组件
+interface AvatarProps {
+  roleInfo?: EnhancedMessage['roleInfo'];
+}
+
+// 通过memo高度优化的Avatar组件
+// 使用CSS背景图片而非<img>标签来显示头像
+const Avatar = memo(({ roleInfo }: AvatarProps) => {
+  // 使用useMemo缓存头像的样式对象和渲染元素
+  const { style, className } = useMemo(() => {
+    // 默认样式
+    const baseClassName = "inline-block w-7 h-7 rounded-full mr-1 bg-no-repeat bg-center bg-cover";
+    
+    // 如果roleInfo不存在，显示默认的动画点
+    if (!roleInfo) {
+      return {
+        style: {},
+        className: "w-2 h-2 rounded-full bg-green-400 animate-pulse mr-1"
+      };
+    }
+    
+    // 得到头像索引
+    let avatarIndex: number;
+    if (roleInfo.avatarIndex !== undefined) {
+      avatarIndex = roleInfo.avatarIndex;
+    } else if (roleInfo.roleName) {
+      avatarIndex = generateAvatarIndex(roleInfo.roleName);
+    } else {
+      // 没有角色信息时显示小点
+      return {
+        style: {},
+        className: "w-2 h-2 rounded-full bg-green-400 animate-pulse mr-1"
+      };
+    }
+    
+    // 使用背景图片
+    return {
+      style: {
+        backgroundImage: `url(/assets/images/avatar/${avatarIndex}.png)`,
+        // 添加一个特殊参数防止浏览器缓存失效
+        // 这个保证了URL是链接到同一个资源，浏览器应该只加载一次
+      },
+      className: baseClassName
+    };
+  }, [roleInfo?.avatarIndex, roleInfo?.roleName]);
+  
+  // 使用div+背景图片而不是img标签
+  return <div className={className} style={style} aria-label={roleInfo?.roleName || 'AI'} />;
+}, (prevProps, nextProps) => {
+  // 保留原来的深度比较防止不必要的重渲染
+  if (!prevProps.roleInfo && !nextProps.roleInfo) return true;
+  if (!prevProps.roleInfo || !nextProps.roleInfo) return false;
+  
+  // 只比较相关属性
+  return prevProps.roleInfo.avatarIndex === nextProps.roleInfo.avatarIndex && 
+         prevProps.roleInfo.roleName === nextProps.roleInfo.roleName;
+});
+
+// 这个组件专门处理角色信息显示，包括头像和角色名
+// 通过将它与消息内容分离，可以避免在消息内容流式更新时重新渲染角色信息
+const RoleInfoBadge = memo(({ roleInfo }: { roleInfo?: EnhancedMessage['roleInfo'] }) => {
+  if (!roleInfo) return null;
+  
+  return (
+    <WithTooltip tooltip={`role: ${roleInfo.roleDescription || ''}`}>
+      <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
+        <Avatar roleInfo={roleInfo} />
+        {roleInfo.roleName}
+      </div>
+    </WithTooltip>
+  );
+});
 
 interface MessagesProps {
   id?: string;
@@ -102,40 +175,10 @@ export const Messages = forwardRef<HTMLDivElement, MessagesProps>(
                     </div>
                   )} */}
                   <div className="grid grid-col-1 w-full">
-                    {/* AI消息显示角色信息 */}
+                    {/* AI消息显示角色信息 - 使用分离的角色信息组件 */}
                     {(!isUserMessage || (message as EnhancedMessage).isAutoMessage === true) && message.roleInfo && (
                       <div className="flex items-center mb-3">
-                        <WithTooltip tooltip={`role: ${message.roleInfo.roleDescription || ''}`}>
-                          <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#2A2A2A] text-white rounded-full border border-[#3A3A3A] shadow-sm hover:bg-[#333] transition-colors">
-                            {message.roleInfo.avatarIndex !== undefined ? (
-                              <img
-                                src={`/assets/images/avatar/${message.roleInfo.avatarIndex}.png`}
-                                alt={message.roleInfo.roleName || 'AI'}
-                                className="w-7 h-7 rounded-full object-cover mr-1"
-                                loading="eager"
-                                decoding="sync"
-                              />
-                            ) : message.roleInfo.roleName ? (
-                              <img
-                                src={`/assets/images/avatar/${(() => {
-                                  // 内联实现基于角色名称的固定头像索引生成
-                                  let seed = 0;
-                                  for (let i = 0; i < message.roleInfo.roleName.length; i++) {
-                                    seed += message.roleInfo.roleName.charCodeAt(i);
-                                  }
-                                  return (seed * 37) % 250;
-                                })()}.png`}
-                                alt={message.roleInfo.roleName}
-                                className="w-7 h-7 rounded-full object-cover mr-1"
-                                loading="eager"
-                                decoding="sync"
-                              />
-                            ) : (
-                              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-1"></div>
-                            )}
-                            {message.roleInfo.roleName}
-                          </div>
-                        </WithTooltip>
+                        <RoleInfoBadge roleInfo={message.roleInfo} />
                         {/* <div className="ml-2 text-xs text-bolt-elements-textTertiary">Responding as this role</div> */}
                       </div>
                     )}

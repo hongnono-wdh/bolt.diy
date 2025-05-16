@@ -446,6 +446,8 @@ export const ChatImpl = memo(
         if (lastMessage.role === 'assistant' && !(lastMessage as EnhancedMessage).roleInfo) {
           // console.log('在流式传输开始时给AI回复添加角色信息');
 
+
+          console.log("查看当前角色",currentRole)
           // 获取当前角色信息
           // 生成基于角色名称的固定头像索引
           // 使用角色名称字符码值的和作为种子

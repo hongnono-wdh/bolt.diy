@@ -3,6 +3,8 @@
 }
 
 .shiki {
+  max-width: 480px;
+  border-radius: 14px;
   &:not(:has(.actions), .actions *) {
     background-color: var(--bolt-elements-messages-code-background) !important;
   }

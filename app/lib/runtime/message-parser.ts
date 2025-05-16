@@ -368,6 +368,9 @@ export class StreamingMessageParser {
       (actionAttributes as FileAction).filePath = filePath;
     } else if (['changerole'].includes(actionType)) {
       const role = this.#extractAttribute(actionTag, 'role') as string;
+      
+      console.log("解析到的标签数据",role);
+
       (actionAttributes as ChangeRoleAction ).role = role;
 
       console.log("解析到了角色改变动作",actionAttributes)
